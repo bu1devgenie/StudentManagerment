@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta  charset="UTF-8">
+    <title>Title</title>
+    <!--    <script type="text/javascript" th:src="@{/js/home.js}"></script>-->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/home.css}"/>
+    <script type="text/javascript" th:src="@{/webjars/jquery/3.6.4/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/bootstrap/5.2.3/js/bootstrap.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/5.2.3/css/bootstrap.min.css}">
+    <script type="text/javascript" th:src="@{/js/home.js}"></script>
+    <script type="text/javascript" th:src="@{/js/student.js}"></script>
+    <script type="text/javascript" th:src="@{/js/teacher.js}"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+</head>
+<body>
+<div class='dashboard'>
+    <div class="dashboard-nav">
+        <header><a href="#!" class="menu-toggle"><i class="fas fa-bars"></i></a><a href="#" class="brand-logo"><i
+                class="fas fa-anchor"></i> <span>BRAND</span></a></header>
+        <nav class="dashboard-nav-list">
+            <a href="#" class="dashboard-nav-item"><i class="fas fa-home"></i>
+                Home </a><a href="#" class="dashboard-nav-item active"><i class="fas fa-tachometer-alt"></i> dashboard
+        </a><a href="#" class="dashboard-nav-item"><i class="fas fa-file-upload"></i> Upload </a>
+            <div class='dashboard-nav-dropdown'>
+                <a class="dashboard-nav-item dashboard-nav-dropdown-toggle"><i class="fas fa-users"></i>
+                    Teacher </a>
+                <div class='dashboard-nav-dropdown-menu'>
+                    <a id="newTeacher" class="dashboard-nav-dropdown-item">New Teacher</a>
+                    <a id="findTeacher" class="dashboard-nav-dropdown-item">Find Teacher</a>
+                </div>
+            </div>
+            <div class='dashboard-nav-dropdown'>
+                <a class="dashboard-nav-item dashboard-nav-dropdown-toggle"><i class="fas fa-users"></i>
+                    Student
+                </a>
+                <div class='dashboard-nav-dropdown-menu'>
+                    <a id="newStudent" class="dashboard-nav-dropdown-item">New Student</a>
+                    <a id="findStudent" class="dashboard-nav-dropdown-item">Find Student</a>
+                </div>
+            </div>
+            <div class='dashboard-nav-dropdown'>
+                <a href="#!" class="dashboard-nav-item dashboard-nav-dropdown-toggle"><i
+                        class="fas fa-money-check-alt"></i> Payments </a>
+                <div class='dashboard-nav-dropdown-menu'><a href="#" class="dashboard-nav-dropdown-item">All</a><a
+                        href="#" class="dashboard-nav-dropdown-item">Recent</a><a href="#"
+                                                                                  class="dashboard-nav-dropdown-item">
+                    Projections</a>
+                </div>
+            </div>
+            <a href="#" class="dashboard-nav-item"><i class="fas fa-cogs"></i> Settings </a><a href="#"
+                                                                                               class="dashboard-nav-item"><i
+                class="fas fa-user"></i> Profile </a>
+            <div class="nav-item-divider"></div>
+            <a href="#" class="dashboard-nav-item"><i class="fas fa-sign-out-alt"></i> Logout </a>
+        </nav>
+    </div>
+    <div class='dashboard-app'>
+        <header class='dashboard-toolbar'><a href="#!" class="menu-toggle"><i class="fas fa-bars"></i></a></header>
+        <div class='dashboard-content'>
+            <div class='container'>
+                <div class='card' id="card">
+                    <div class='card-header'>
+                        <h1>Welcome back Jim</h1>
+                    </div>
+                    <div class='card-body'>
+                        <p>Your account type is: Administrator</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal update-->
+<div class="modal fade" id="UpdateStatic" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="mssvUpdate" class="col-form-label">MSSV:</label>
+                        <input readonly="readonly" type="text" class="form-control" id="mssvUpdate">
+                    </div>
+                    <div class="mb-3">
+                        <label for="current_semester" class="col-form-label">Current Semester:</label>
+                        <input type="text" class="form-control" id="current_semester">
+                    </div>
+                    <div class="mb-3">
+                        <label for="account_mail" class="col-form-label">Account Mail:</label>
+                        <input type="text" class="form-control" id="account_mail"
+                               list="options">
+                        <datalist id="options">
+                            <option value="Option 1"></option>
+                            <option value="Option 2"></option>
+                            <option value="Option 3"></option>
+                        </datalist>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nameUpdate" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control" id="nameUpdate">
+                    </div>
+                    <div class="mb-3">
+                        <label for="dobUpdate" class="col-form-label">DOB:</label>
+                        <input type="date" class="form-control" id="dobUpdate">
+                    </div>
+                    <div class="mb-3">
+                        <label for="addressUpdate" class="col-form-label">Address:</label>
+                        <textarea class="form-control" id="addressUpdate"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="avatar" class="col-form-label">Avatar:</label>
+                        <input type="file" class="form-control" id="avatar">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button onclick="clickUpdate()" type="button" class="btn btn-primary">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal delete-->
+<div class="modal fade" id="staticBackdrop-delete" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdrop-deleteLabel">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="StudentProperties">Are u sure to delete </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button onclick="clickDelete()" type="button" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    const mobileScreen = window.matchMedia("(max-width: 990px )");
+    $(document).ready(function () {
+        $(".dashboard-nav-dropdown-toggle").click(function () {
+            $(this).closest(".dashboard-nav-dropdown")
+                .toggleClass("show")
+                .find(".dashboard-nav-dropdown")
+                .removeClass("show");
+            $(this).parent()
+                .siblings()
+                .removeClass("show");
+        });
+        $(".menu-toggle").click(function () {
+            if (mobileScreen.matches) {
+                $(".dashboard-nav").toggleClass("mobile-show");
+            } else {
+                $(".dashboard").toggleClass("dashboard-compact");
+            }
+        });
+    });
+
+    // add stu
+    document.getElementById("newStudent").addEventListener("click", function (event) {
+        event.preventDefault();
+        var values = document.getElementById("card");
+        $.ajax({
+            url: '/student/getMSSV',
+            type: 'GET',
+            data: {},
+            success: function (data) {
+                if (data != null) {
+                    values.innerHTML = "<div class=\"card\">\n" +
+                        "        <div class=\"card-header\">\n" +
+                        "            <h1>Add new student</h1>\n" +
+                        "        </div>\n" +
+                        "        <div class=\"card-body\">\n" +
+                        "            <form enctype=\"multipart/form-data\">\n" +
+                        "                <label class=\"form-label\" for=\"mssv\">MSSV:</label><br>\n" +
+                        "                <input readonly class=\"form-control\" type=\"text\" id=\"mssv\" name=\"mssv\" value=\"" + data + "\"><br>\n" +
+                        "\n" +
+                        "                <label class=\"form-label\" for=\"current_semester\">Current semester:</label><br>\n" +
+                        "                <input min=\"0\" max=\"10\" class=\"form-control\" type=\"number\" id=\"current_semester\" name=\"current_semester\"><br>\n" +
+                        "\n" +
+                        "                <label class=\"form-label\" for=\"firstName\">First Name:</label><br>\n" +
+                        "                <input class=\"form-control\" type=\"text\" id=\"firstName\" name=\"firstName\"><br>\n" +
+                        "\n" +
+                        "                <label class=\"form-label\" for=\"lastName\">Last Name:</label><br>\n" +
+                        "                <input class=\"form-control\" type=\"text\" id=\"lastName\" name=\"lastName\"><br>\n" +
+                        "\n" +
+                        "                <label class=\"form-label\" for=\"dob\">Date of birth:</label><br>\n" +
+                        "                <input class=\"form-control\" type=\"date\" id=\"dob\" name=\"dob\"><br>\n" +
+                        "\n" +
+                        "                <label class=\"form-label\" for=\"address\">Address:</label><br>\n" +
+                        "                <input class=\"form-control\" type=\"text\" id=\"address\" name=\"address\"><br>\n" +
+                        "\n" +
+                        "                <label class=\"form-label\" for=\"avatar\">Avatar:</label><br>\n" +
+                        "                <input class=\"form-control\" type=\"file\" id=\"avatarFile\" name=\"avatarFile\"><br>\n" +
+                        " <input onclick=\"addStudent()\" class=\"btn btn-primary\" type=\"button\" value=\"Save\">\n" +
+                        "            </form>\n" +
+                        "        </div>\n" +
+                        "    </div>";
+                } else {
+                    alert(data);
+                }
+            }
+        });
+    });
+    // find stu
+    document.getElementById("findStudent").addEventListener("click", function (event) {
+        event.preventDefault();
+        var values = document.getElementById("card");
+        $.ajax({
+            url: '/student/findAll',
+            type: 'GET',
+            data: {},
+
+            success: function (data) {
+                if (data != null) {
+                    var tbody = "";
+                    data.content.forEach(function (item) {
+                        tbody += "<tr>" +
+                            "<td>" + item.id + "</td>" +
+                            "<td>" + item.mssv + "</td>" +
+                            "<td>" + item.name + "</td>" +
+                            "<td>" + item.dob + "</td>" +
+                            "<td>" + item.address + "</td>" +
+                            "<td>" + item.currentSemester + "</td>" +
+                            "<td>" + item.email + "</td>" +
+                            "<td><img style='height: 130px' src=\"" + item.avatar + "\" alt=\"studentImage\"></td>" +
+                            "<td><button id=\"updateModal\" type=\"button\" class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#exampleModalLong\" class='btn btn-primary' onclick=\"showUpdateConfirm('" + item.mssv + "', '" + item.name + "', '" + item.dob + "', '" + item.address + "', '" + item.currentSemester + "', '" + item.email + "', '" + item.avatar + "')\">Update</button>" +
+                            " <button class='btn btn-warning' onclick=\"showDeleteConfirm('" + item.mssv + "')\">Delete</button></td>" +
+                            "</tr>";
+                    });
+
+                    var pageHtml = "";
+                    for (let i = 0; i < data.totalPages; i++) {
+                        pageHtml += "<li class=\"page-item\"><a class=\"page-link\" onclick=\"searchStudent(" + i + ")\">" + (i + 1) + "</a></li>";
+                    }
+                    values.innerHTML = "<div class=\"card\">\n" +
+                        "    <div  class=\"card-header\">\n" +
+                        "        <h1 style='width: 100%'>List student</h1>\n"
+                        + "<div style='text-align: end'>" +
+                        "<select id=\"mySelect\" style='margin-right: 20px' class='form-select-sm' name=\"cars\" id=\"cars\">\n" +
+                        "  <option value=\"mssv\">Student number</option>\n" +
+                        "  <option value=\"name\">Name</option>\n" +
+                        "  <option value=\"dob\">Birthday</option>\n" +
+                        "  <option value=\"address\">Address</option>\n" +
+                        "  <option value=\"\semester\">Current Semester</option>\n" +
+                        "  <option value=\"email\">Account email</option>\n" +
+                        "</select>" +
+                        "<input id=\"searchText\" oninput=\"searchStudent(0)\" class='nav-list-search' type='text'/>" +
+                        "</div>" +
+                        "    <div class=\"card-body\">\n" +
+                        "        <table class='table'>\n" +
+                        "            <thead class='table-header'>\n" +
+                        "                <tr>\n" +
+                        "                    <th>ID</th>\n" +
+                        "                    <th>Student number</th>\n" +
+                        "                    <th>Name</th>\n" +
+                        "                    <th>Birthday</th>\n" +
+                        "                    <th>Address</th>\n" +
+                        "                    <th>Current Semester</th>\n" +
+                        "                    <th>Account email</th>\n" +
+                        "                    <th>Avatar</th>\n" +
+                        "                    <th>Action</th>\n" +
+                        "                </tr>\n" +
+                        "            </thead>\n" +
+                        "            <tbody id=\"danhsach\" class=\"\">\n" +
+                        tbody +
+                        "            </tbody>\n" +
+                        "        </table> " +
+                        "<nav aria-label=\"Page navigation example\">\n" +
+                        "  <ul id=\"pagination\" class=\"pagination\">\n" +
+                        "    <li class=\"page-item\"><a class=\"page-link\" href=\"#\">Previous</a></li>\n" +
+                        pageHtml +
+                        "    <li class=\"page-item\"><a class=\"page-link\" href=\"#\">Next</a></li>\n" +
+                        "  </ul>\n" +
+                        "</nav>" +
+                        "    </div>\n" +
+                        "</div>";
+                } else {
+                    alert(data);
+                }
+            }
+        });
+    });
+    //
+    // add teacher
+    document.getElementById("newTeacher").addEventListener("click", function (event) {
+        event.preventDefault();
+
+        var courseDatalist = "";
+        hintCourse().then(function (courseList) {
+            for (var i of courseList) {
+                courseDatalist += "<option class='form-check' value=\"" + i + "\">" + i + "</option>";
+            }
+            var values = document.getElementById("card");
+            $.ajax({
+                url: '/teacher/getMSGV',
+                type: 'GET',
+
+                success: function (data) {
+                    if (data != null) {
+                        values.innerHTML = "<div class=\"card\">\n" +
+                            "        <div class=\"card-header\">\n" +
+                            "            <h1>Add new Teacher</h1>\n" +
+                            "        </div>\n" +
+                            "        <div class=\"card-body\">\n" +
+                            "            <form enctype=\"multipart/form-data\">\n" +
+                            "                <label class=\"form-label\" for=\"msgv\">MSGV:</label><br>\n" +
+                            "                <input readonly class=\"form-control\" type=\"text\" id=\"msgv\" name=\"msgv\" value=\"" + data + "\"><br>\n" +
+                            "\n" +
+                            "                        <label for=\"course\" class=\"col-form-label\">Course:</label>\n" +
+                            "                       <select class='form-select' id=\"mySelect\" multiple>" +
+                            courseDatalist +
+                            "</select>\n" +
+                            "\n" +
+                            "                <label class=\"form-label\" for=\"name\">Name:</label><br>\n" +
+                            "                <input class=\"form-control\" type=\"text\" id=\"name\" name=\"name\"><br>\n" +
+                            "\n" +
+                            "                <label class=\"form-label\" for=\"dob\">Date of birth:</label><br>\n" +
+                            "                <input class=\"form-control\" type=\"date\" id=\"dob\" name=\"dob\"><br>\n" +
+                            "\n" +
+                            "                <label class=\"form-label\" for=\"address\">Address:</label><br>\n" +
+                            "                <input class=\"form-control\" type=\"text\" id=\"address\" name=\"address\"><br>\n" +
+                            "\n" +
+                            "                <label class=\"form-label\" for=\"avatar\">Avatar:</label><br>\n" +
+                            "                <input class=\"form-control\" type=\"file\" id=\"avatarFile\" name=\"avatarFile\"><br>\n" +
+                            " <input onclick=\"addTeacher()\" class=\"btn btn-primary\" type=\"button\" value=\"Save\">\n" +
+                            "            </form>\n" +
+                            "        </div>\n" +
+                            "    </div>";
+                    } else {
+                        alert(data);
+                    }
+                }
+            });
+        }).catch(function (error) {
+            console.error(error);
+        });
+    });
+    // find stu
+    document.getElementById("findTeacher").addEventListener("click", function (event) {
+        event.preventDefault();
+        var values = document.getElementById("card");
+        $.ajax({
+            url: '/teacher/getAllTeacher',
+            type: 'GET',
+            data: {},
+
+            success: function (data) {
+                if (data != null) {
+                    var tbody = "";
+                    data.content.forEach(function (item) {
+                        tbody += "<tr>" +
+                            "<td>" + item.id + "</td>" +
+                            "<td>" + item.mssv + "</td>" +
+                            "<td>" + item.name + "</td>" +
+                            "<td>" + item.dob + "</td>" +
+                            "<td>" + item.address + "</td>" +
+                            "<td>" + item.currentSemester + "</td>" +
+                            "<td>" + item.email + "</td>" +
+                            "<td><img style='height: 130px' src=\"" + item.avatar + "\" alt=\"studentImage\"></td>" +
+                            "<td><button id=\"updateModal\" type=\"button\" class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#exampleModalLong\" class='btn btn-primary' onclick=\"showUpdateConfirm('" + item.mssv + "', '" + item.name + "', '" + item.dob + "', '" + item.address + "', '" + item.currentSemester + "', '" + item.email + "', '" + item.avatar + "')\">Update</button>" +
+                            " <button class='btn btn-warning' onclick=\"showDeleteConfirm('" + item.mssv + "')\">Delete</button></td>" +
+                            "</tr>";
+                    });
+
+                    var pageHtml = "";
+                    for (let i = 0; i < data.totalPages; i++) {
+                        pageHtml += "<li class=\"page-item\"><a class=\"page-link\" onclick=\"searchStudent(" + i + ")\">" + (i + 1) + "</a></li>";
+                    }
+                    values.innerHTML = "<div class=\"card\">\n" +
+                        "    <div  class=\"card-header\">\n" +
+                        "        <h1 style='width: 100%'>List student</h1>\n"
+                        + "<div style='text-align: end'>" +
+                        "<select id=\"mySelect\" style='margin-right: 20px' class='form-select-sm' name=\"cars\" id=\"cars\">\n" +
+                        "  <option value=\"mssv\">Student number</option>\n" +
+                        "  <option value=\"name\">Name</option>\n" +
+                        "  <option value=\"dob\">Birthday</option>\n" +
+                        "  <option value=\"address\">Address</option>\n" +
+                        "  <option value=\"\semester\">Current Semester</option>\n" +
+                        "  <option value=\"email\">Account email</option>\n" +
+                        "</select>" +
+                        "<input id=\"searchText\" oninput=\"searchStudent(0)\" class='nav-list-search' type='text'/>" +
+                        "</div>" +
+                        "    <div class=\"card-body\">\n" +
+                        "        <table class='table'>\n" +
+                        "            <thead class='table-header'>\n" +
+                        "                <tr>\n" +
+                        "                    <th>ID</th>\n" +
+                        "                    <th>Student number</th>\n" +
+                        "                    <th>Name</th>\n" +
+                        "                    <th>Birthday</th>\n" +
+                        "                    <th>Address</th>\n" +
+                        "                    <th>Current Semester</th>\n" +
+                        "                    <th>Account email</th>\n" +
+                        "                    <th>Avatar</th>\n" +
+                        "                    <th>Action</th>\n" +
+                        "                </tr>\n" +
+                        "            </thead>\n" +
+                        "            <tbody id=\"danhsach\" class=\"\">\n" +
+                        tbody +
+                        "            </tbody>\n" +
+                        "        </table> " +
+                        "<nav aria-label=\"Page navigation example\">\n" +
+                        "  <ul id=\"pagination\" class=\"pagination\">\n" +
+                        "    <li class=\"page-item\"><a class=\"page-link\" href=\"#\">Previous</a></li>\n" +
+                        pageHtml +
+                        "    <li class=\"page-item\"><a class=\"page-link\" href=\"#\">Next</a></li>\n" +
+                        "  </ul>\n" +
+                        "</nav>" +
+                        "    </div>\n" +
+                        "</div>";
+                } else {
+                    alert(data);
+                }
+            }
+        });
+    });
+    //
+</script>
+</html>
