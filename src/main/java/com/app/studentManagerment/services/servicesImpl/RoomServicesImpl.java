@@ -3,7 +3,6 @@ package com.app.studentManagerment.services.servicesImpl;
 import com.app.studentManagerment.dao.RoomRepository;
 import com.app.studentManagerment.entity.Room;
 import com.app.studentManagerment.services.RoomServices;
-import com.app.studentManagerment.services.SlotService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,11 +12,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class RoomServicesImpl implements RoomServices {
     private RoomRepository roomRepository;
-    private SlotService slotService;
 
-    public RoomServicesImpl(RoomRepository roomRepository, SlotService slotService) {
+    public RoomServicesImpl(RoomRepository roomRepository) {
         this.roomRepository = roomRepository;
-        this.slotService = slotService;
     }
 
 
@@ -34,7 +31,6 @@ public class RoomServicesImpl implements RoomServices {
         room.setAddress(address);
         room.setName(name);
         room = roomRepository.save(room);
-        slotService.addSlot(room);
         return room;
     }
 }

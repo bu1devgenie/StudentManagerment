@@ -1,10 +1,6 @@
 package com.app.studentManagerment.dao;
 
 
-import com.app.studentManagerment.dto.Course_TeacherDto;
-import com.app.studentManagerment.entity.Course;
-import com.app.studentManagerment.entity.Semester;
-import com.app.studentManagerment.entity.Slot;
 import com.app.studentManagerment.entity.user.Teacher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,9 +36,54 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
 
     Teacher findByMsgv(String msgvUpdate);
 
-    @Query("""
-            SELECT t from Teacher t
-               """)
-    Teacher getTeacherCanTakeClasses(@Param("courseName") String courseName, @Param("semesterId") Long semesterId, @Param("slotOfClass") List<Slot> slotOfClass);
+    @Query(value = """
+            select *,(
+                    SELECT COALESCE(COUNT(*), 0) as numberClassOfTeacher
+                    FROM teacher t2
+                    JOIN classroom c ON t2.id = c.teacher_id
+                    WHERE c.semester_id = :semesterId AND t2.id = t.id
+                    GROUP BY t2.id
+                    UNION ALL
+                    SELECT 0
+                    WHERE NOT EXISTS (
+                        SELECT *
+                        FROM teacher t3
+                        JOIN classroom c ON t3.id = c.teacher_id
+                        WHERE c.semester_id = :semesterId AND t3.id = t.id
+                    )
+                ) as num_classes
+                    from teacher t
+                     join teacher_course tc on t.id = tc.teacher_id
+                     where
+                         tc.course_id=:courseId and
+                                        t.id not in
+                                        (select distinct c.teacher_id from slot
+                                        join schedule s on s.id = slot.slot_id
+                                        join classroom c on c.id = s.classroom_id
+                                        where day_of_week in :dayOfWeak
+                                        and slot.slot_of_day in :slot_of_day
+                                        and teacher_id is not null
+                                        )
+                        and
+                        (SELECT COALESCE(COUNT(*), 0) as numberClassOfTeacher
+                                FROM teacher t2
+                                JOIN classroom c ON t2.id = c.teacher_id
+                                WHERE c.semester_id = :semesterId AND t2.id = t.id
+                                GROUP BY t2.id
+                                UNION ALL
+                                SELECT 0
+                                WHERE NOT EXISTS (
+                                    SELECT *
+                                    FROM teacher t3
+                                    JOIN classroom c ON t3.id = c.teacher_id
+                                WHERE c.semester_id = :semesterId AND t3.id = t.id
+                        ))<=4
+            order by  num_classes
+              """, nativeQuery = true)
+    List<Teacher> getTeacherCanTakeClasses(@Param("semesterId")long semesterId,
+                                           @Param("courseId")long courseId,
+                                           @Param("dayOfWeak") int[] dayOfWeak,
+                                           @Param("slot_of_day") int[] slot_of_day
+                                           );
 
 }

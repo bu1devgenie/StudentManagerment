@@ -22,20 +22,17 @@ public class Course {
 
     @Column(name = "activity", nullable = false)
     private boolean activity;
-    @OneToMany
-    @JoinColumn(name = "classroom_id")
-    private List<ClassRoom> classRooms;
+
 
     public Course() {
     }
 
-    public Course(Long id, String name, int courseSemester, int totalSlot, boolean activity, List<ClassRoom> classRooms) {
+    public Course(Long id, String name, int courseSemester, int totalSlot, boolean activity) {
         this.id = id;
         this.name = name;
         this.courseSemester = courseSemester;
         this.totalSlot = totalSlot;
         this.activity = activity;
-        this.classRooms = classRooms;
     }
 
     public Long getId() {
@@ -78,13 +75,6 @@ public class Course {
         this.activity = activity;
     }
 
-    public List<ClassRoom> getClassRooms() {
-        return classRooms;
-    }
-
-    public void setClassRooms(List<ClassRoom> classRooms) {
-        this.classRooms = classRooms;
-    }
 
     @Override
     public String toString() {
@@ -94,7 +84,6 @@ public class Course {
                 ", courseSemester=" + courseSemester +
                 ", totalSlot=" + totalSlot +
                 ", activity=" + activity +
-                ", classRooms=" + classRooms +
                 '}';
     }
 }

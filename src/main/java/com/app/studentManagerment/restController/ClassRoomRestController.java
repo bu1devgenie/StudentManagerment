@@ -31,8 +31,6 @@ public class ClassRoomRestController {
                                             @RequestParam(name = "currentSlot", required = false) String currentSlot,
                                             @RequestParam(name = "learning", required = false) boolean learning
                                             ) {
-
-
         return classRoomService.searchClassRoom(semester_name, msgv, courseName, currentSlot, learning);
     }
 

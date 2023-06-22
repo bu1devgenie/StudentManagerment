@@ -1,11 +1,6 @@
 package com.app.studentManagerment.services;
 
 import com.app.studentManagerment.dto.TeacherDto;
-import com.app.studentManagerment.dto.Course_TeacherDto;
-import com.app.studentManagerment.entity.ClassRoom;
-import com.app.studentManagerment.entity.Course;
-import com.app.studentManagerment.entity.Semester;
-import com.app.studentManagerment.entity.Slot;
 import com.app.studentManagerment.entity.user.Teacher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,5 +25,8 @@ public interface TeacherService {
     boolean deleteTeacher(String msgv);
 
 
-    public Teacher getAllTeacherCanTakeClasses(Course course, Semester semester, List<Slot> slots);
+    public List<Teacher> getAllTeacherCanTakeClasses(long semesterId,
+                                                     long courseId,
+                                                      int[] dayOfWeak,
+                                                      int[] slot_of_day);
 }
