@@ -37,53 +37,58 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
     Teacher findByMsgv(String msgvUpdate);
 
     @Query(value = """
-            select *,(
-                    SELECT COALESCE(COUNT(*), 0) as numberClassOfTeacher
-                    FROM teacher t2
-                    JOIN classroom c ON t2.id = c.teacher_id
-                    WHERE c.semester_id = :semesterId AND t2.id = t.id
-                    GROUP BY t2.id
-                    UNION ALL
-                    SELECT 0
-                    WHERE NOT EXISTS (
-                        SELECT *
-                        FROM teacher t3
-                        JOIN classroom c ON t3.id = c.teacher_id
-                        WHERE c.semester_id = :semesterId AND t3.id = t.id
-                    )
-                ) as num_classes
-                    from teacher t
-                     join teacher_course tc on t.id = tc.teacher_id
-                     where
-                         tc.course_id=:courseId and
-                                        t.id not in
-                                        (select distinct c.teacher_id from slot
-                                        join schedule s on s.id = slot.slot_id
-                                        join classroom c on c.id = s.classroom_id
-                                        where day_of_week in :dayOfWeak
-                                        and slot.slot_of_day in :slot_of_day
-                                        and teacher_id is not null
-                                        )
-                        and
-                        (SELECT COALESCE(COUNT(*), 0) as numberClassOfTeacher
-                                FROM teacher t2
-                                JOIN classroom c ON t2.id = c.teacher_id
-                                WHERE c.semester_id = :semesterId AND t2.id = t.id
-                                GROUP BY t2.id
-                                UNION ALL
-                                SELECT 0
-                                WHERE NOT EXISTS (
-                                    SELECT *
-                                    FROM teacher t3
-                                    JOIN classroom c ON t3.id = c.teacher_id
-                                WHERE c.semester_id = :semesterId AND t3.id = t.id
-                        ))<=4
-            order by  num_classes
-              """, nativeQuery = true)
-    List<Teacher> getTeacherCanTakeClasses(@Param("semesterId")long semesterId,
-                                           @Param("courseId")long courseId,
-                                           @Param("dayOfWeak") int[] dayOfWeak,
-                                           @Param("slot_of_day") int[] slot_of_day
-                                           );
+            SELECT t.*,
+                          (SELECT count(teacher_id)
+                           FROM teacher
+                           JOIN classroom c ON teacher.id = c.teacher_id
+                           WHERE c.semester_id = :semesterId
+                             AND teacher_id = t.id ) AS numberClassTeaching
+                        FROM teacher t
+                        WHERE
+                            (SELECT COUNT(DISTINCTROW a.slot_of_day, b.slot_of_day, a.dayofw, b.dayofw)
+                             FROM
+                               (SELECT DISTINCTROW s.slot_of_day,
+                                                   dayofweek(s.sesion_date) AS dayofw
+                                FROM classroom c
+                                JOIN SESSION s ON c.id = s.classroom_id
+                                WHERE c.teacher_id = t.id ) a
+                             JOIN
+                               (SELECT DISTINCTROW s.slot_of_day,
+                                                   dayofweek(s.sesion_date) AS dayofw
+                                FROM SESSION s
+                                WHERE classroom_id = :classroomId ) b ON a.dayofw = b.dayofw
+                             WHERE a.slot_of_day = b.slot_of_day )= 0
+                          AND
+                            (SELECT count(c.id)
+                             FROM teacher
+                             JOIN classroom c ON teacher.id = c.teacher_id
+                             WHERE c.semester_id = :semesterId and teacher.id=t.id)< 4
+                          AND :courseId in
+                            (SELECT tc.course_id
+                             FROM teacher
+                             JOIN teacher_course tc ON teacher.id = tc.teacher_id
+                             JOIN course c ON tc.course_id = c.id
+                             WHERE teacher.id = t.id )
+                        ORDER BY numberClassTeaching ASC
+                        limit 1
+             """, nativeQuery = true)
+    Teacher getTeacherTakeClass(@Param("semesterId") long semesterId, @Param("classroomId") long classroomId, @Param("courseId") long courseId);
 
+
+    @Query("""
+            select distinct t.account.email from Teacher t
+            join ClassRoom c
+            where c.semester.id=:semesterId
+            """)
+    List<String> allEmailOfTeacherTeakedClass(@Param("semesterId") long semesterId);
+
+    @Query(value = """
+            select distinct a.email
+                        from teacher t
+                        join classroom c on t.id = c.teacher_id
+                        join account a on a.id = t.account_id
+                        where c.semester_id=:id and t.account_id is not null
+                        group by t.id
+            """, nativeQuery = true)
+    List<String> getAllEmailTeacherHaveClass(@Param("id") Long id);
 }

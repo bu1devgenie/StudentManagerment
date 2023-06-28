@@ -208,7 +208,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public List<Teacher> getAllTeacherCanTakeClasses(long semesterId, long courseId, int[] dayOfWeak, int[] slot_of_day) {
-        return teacherRepository.getTeacherCanTakeClasses(semesterId, courseId, dayOfWeak, slot_of_day);
+        return null;
     }
 
 
