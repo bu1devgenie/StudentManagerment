@@ -1,10 +1,8 @@
 package com.app.studentManagerment.services;
 
 import com.app.studentManagerment.dto.StudentDto;
-import com.app.studentManagerment.dto.Semester_StudentDto;
-import com.app.studentManagerment.entity.Course;
-import com.app.studentManagerment.entity.Semester;
 import com.app.studentManagerment.entity.user.Student;
+import com.app.studentManagerment.enumPack.Gender;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,11 +18,10 @@ public interface StudentService {
     Student findById(long id);
 
     Student addStudent(int current_semester,
-                       String firstName,
-                       String lastName,
+                       String name,
                        LocalDate dob,
                        String address,
-                       MultipartFile avatarFile) throws GeneralSecurityException, IOException;
+                       MultipartFile avatarFile, Gender gender) throws GeneralSecurityException, IOException;
 
     StudentDto updateStudent(String mssv,
                              int current_semester,
@@ -32,7 +29,7 @@ public interface StudentService {
                              String Name,
                              LocalDate dob,
                              String address,
-                             MultipartFile avatarFile) throws Exception;
+                             MultipartFile avatarFile, Gender gender) throws Exception;
 
     boolean deleteStudent(String mssv);
 

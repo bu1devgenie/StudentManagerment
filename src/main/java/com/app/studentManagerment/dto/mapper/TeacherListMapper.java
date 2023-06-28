@@ -18,6 +18,6 @@ public interface TeacherListMapper {
     @Mapping(source = "account.email", target = "email")
     @Mapping(source = "avatar", target = "avatar")
     @Mapping(source = "course", target = "course")
-
+    @Mapping(source = "gender", target = "gender")
     public TeacherDto teacherToTeacherDTO(Teacher teacher);
 }

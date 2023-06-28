@@ -2,6 +2,7 @@ package com.app.studentManagerment.restController;
 
 import com.app.studentManagerment.dto.TeacherDto;
 import com.app.studentManagerment.entity.user.Teacher;
+import com.app.studentManagerment.enumPack.Gender;
 import com.app.studentManagerment.services.TeacherService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,13 +28,14 @@ public class TeacherRestController {
     }
 
     @PostMapping("/addTeacher")
-    public Teacher addTeacher(@RequestParam(name = "selectedCourse", required = false) List<String> courses,
+    public TeacherDto addTeacher(@RequestParam(name = "selectedCourse", required = false) List<String> courses,
                               @RequestParam(name = "name") String name,
                               @RequestParam(name = "dob") LocalDate dob,
                               @RequestParam(name = "address") String address,
-                              @RequestParam(name = "avatarFile", required = false) MultipartFile avatar) {
+                              @RequestParam(name = "avatarFile", required = false) MultipartFile avatar,
+                              @RequestParam(name = "gender") Gender gender) {
 
-        return teacherService.addTeacher(courses, name, dob, address, avatar);
+        return teacherService.addTeacher(courses, name, dob, address, avatar, gender);
     }
 
     @PostMapping("/searchTeacher")
@@ -58,8 +60,9 @@ public class TeacherRestController {
                                                  @RequestParam(name = "dob", required = false) LocalDate dob,
                                                  @RequestParam(name = "avatar", required = false) MultipartFile avatar,
                                                  @RequestParam(name = "course", required = false) List<String> courses,
-                                                 @RequestParam(name = "email", required = false) String email) throws Exception {
-        return teacherService.updateTeacher(msgvUpdate, name, address, dob, avatar, courses, email);
+                                                 @RequestParam(name = "email", required = false) String email,
+                                                 @RequestParam(name = "gender") Gender gender) throws Exception {
+        return teacherService.updateTeacher(msgvUpdate, name, address, dob, avatar, courses, email, gender);
     }
 
     @DeleteMapping("/deleteTeacher")

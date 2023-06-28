@@ -16,11 +16,9 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -68,31 +66,34 @@ public class EmailServiceImpl implements MailProService {
     }
 
     @Async
+    @Transactional
     @Override
-    public void sendMessageWithHtmlTemplate(
-            List<String> emails, MailPro mailPro, JavaMailSender sender, String subject, String pathToHTMLFile) {
+    public void sendMessageWithHtmlTemplate(List<String> emails, MailPro mailPro, JavaMailSender sender, String subject, String pathToHTMLFile) {
         MimeMessage message = sender.createMimeMessage();
         MimeMessageHelper helper = null;
         Resource resource = new DefaultResourceLoader().getResource("classpath:" + pathToHTMLFile);
-        try (BufferedReader reader = new BufferedReader(new FileReader(resource.getURL().getPath()))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(resource.getURL().getPath()), "UTF-8"))) {
             String line;
-            String html = null;
+            StringBuilder html = new StringBuilder();
             while ((line = reader.readLine()) != null) {
-                html += line;
+                html.append(line);
             }
-            helper = new MimeMessageHelper(message, true);
+            helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setFrom(mailPro.getUsername());
-            helper.setTo(emails.toArray(new String[0]));
+            helper.setTo(emails.get(0));
+            if (emails.size() >= 2) {
+                helper.setBcc(emails.subList(1, emails.size()).toArray(new String[]{}));
+            }
             helper.setSubject(subject);
-            helper.setText(html, true);
+            helper.setText(html.toString(), true);
             sender.send(message);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
-
-
     }
+
+
 }
 

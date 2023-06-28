@@ -7,27 +7,21 @@ import com.app.studentManagerment.dto.StudentDto;
 import com.app.studentManagerment.dto.mapper.StudentListMapper;
 import com.app.studentManagerment.entity.Account;
 import com.app.studentManagerment.entity.ClassRoom;
-import com.app.studentManagerment.dto.Semester_StudentDto;
-import com.app.studentManagerment.entity.Course;
-import com.app.studentManagerment.entity.Semester;
 import com.app.studentManagerment.entity.user.Student;
+import com.app.studentManagerment.enumPack.Gender;
 import com.app.studentManagerment.services.GoogleService;
 import com.app.studentManagerment.services.StudentService;
-import org.hibernate.sql.exec.ExecutionException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.stream.Collectors;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -61,43 +55,23 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Student addStudent(int current_semester, String firstName, String lastName, LocalDate dob, String address, MultipartFile avatarFile) throws GeneralSecurityException, IOException {
+    public Student addStudent(int current_semester, String name, LocalDate dob, String address, MultipartFile avatarFile, Gender gender) throws GeneralSecurityException, IOException {
         String mssv = getMSSV();
-        String name = firstName + " " + lastName;
-        String foderName = "StudentManager/Student";
-        String avatarFileName = mssv + "--" + name.replace(" ", "") + ".jpg";
-
-        // Tạo một CompletableFuture để tạo link từ file avatar
-        CompletableFuture<String> futureLink = CompletableFuture.supplyAsync(() -> {
-            try {
-                String filedId = googleService.uploadFile(avatarFile, foderName, "anyone", "reader", avatarFileName);
-                return googleService.getLiveLink(filedId);
-            } catch (Exception e) {
-                throw new CompletionException(e);
-            }
-        });
-
         // Tạo đối tượng Student và lưu vào database
         Student theStudent = new Student();
         theStudent.setMssv(mssv.trim());
         theStudent.setCurrentSemester(current_semester);
-        theStudent.setName(firstName.trim() + " " + lastName.trim());
+        theStudent.setName(name);
         theStudent.setDob(dob);
         theStudent.setAddress(address.trim());
-
-        // Chờ đợi đến khi link được tạo xong rồi mới set vào Student
-        try {
-            String livelink = futureLink.get();
-            theStudent.setAvatar(livelink);
-        } catch (InterruptedException | ExecutionException | java.util.concurrent.ExecutionException ex) {
-            throw new RuntimeException(ex);
-        }
-
-        return studentRepository.save(theStudent);
+        theStudent.setGender(gender);
+        theStudent = studentRepository.save(theStudent);
+        addImage(theStudent, avatarFile);
+        return theStudent;
     }
 
     @Override
-    public StudentDto updateStudent(String mssv, int current_semester, String mail, String Name, LocalDate dob, String address, MultipartFile avatarFile) throws Exception {
+    public StudentDto updateStudent(String mssv, int current_semester, String mail, String name, LocalDate dob, String address, MultipartFile avatarFile, Gender gender) throws Exception {
         Student theStudent = studentRepository.findByMssv(mssv);
         if (theStudent != null) {
             if (current_semester > 0) {
@@ -107,8 +81,8 @@ public class StudentServiceImpl implements StudentService {
                 Account account = accountRepository.findByEmail(mail);
                 theStudent.setAccount(account);
             }
-            if (Name != null) {
-                theStudent.setName(Name);
+            if (name != null) {
+                theStudent.setName(name);
             }
             if (dob != null) {
                 theStudent.setDob(dob);
@@ -116,31 +90,8 @@ public class StudentServiceImpl implements StudentService {
             if (address != null) {
                 theStudent.setAddress(address);
             }
-            if (avatarFile != null) {
-                // tìm avatar cũ của student
-                //  xóa nó đi
-                if (theStudent.getAvatar() != null && theStudent.getAvatar().contains("https://drive.google.com/uc?id=")) {
-                    String fileId = theStudent.getAvatar().substring(31);
-                    googleService.deleteFileOrFolder(fileId);
-                }
-                // thêm avatar mới vào
-                String foderName = "StudentManager/Student";
-                String avatarFileName = mssv + "--" + Name.replace(" ", "") + ".jpg";
-                CompletableFuture<String> futureLink = CompletableFuture.supplyAsync(() -> {
-                    try {
-                        String filedId = googleService.uploadFile(avatarFile, foderName, "anyone", "reader", avatarFileName);
-                        return googleService.getLiveLink(filedId);
-                    } catch (Exception e) {
-                        throw new CompletionException(e);
-                    }
-                });
-                // set vào thuộc tính để thêm vào db
-                try {
-                    String livelink = futureLink.get();
-                    theStudent.setAvatar(livelink);
-                } catch (InterruptedException | ExecutionException | java.util.concurrent.ExecutionException ex) {
-                    throw new RuntimeException(ex);
-                }
+            if (gender != null) {
+                theStudent.setGender(gender);
             }
         } else {
             return null;
@@ -162,10 +113,8 @@ public class StudentServiceImpl implements StudentService {
             studentRepository.delete(student);
             return true;
         }
-
         return false;
     }
-
 
     @Override
     public String getMSSV() {
@@ -195,7 +144,6 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<StudentDto> getAllStudentWithCurrentSemester(int currentSemester) {
         List<StudentDto> studentDtos = studentRepository.findAllByCurrentSemester(currentSemester).stream().map(studentListMapper::StudentToStudentDto).toList();
-
         return studentDtos;
     }
 
@@ -205,4 +153,30 @@ public class StudentServiceImpl implements StudentService {
     }
 
 
+    @Async
+    public void addImage(Student student, MultipartFile avatar) {
+        try {
+            if (student.getAvatar() != null) {
+                // tìm avatar cũ của teacher
+                //  xóa nó đi
+                if (student.getAvatar() != null && student.getAvatar().contains("https://drive.google.com/uc?id=")) {
+                    String fileId = student.getAvatar().substring(31);
+                    googleService.deleteFileOrFolder(fileId);
+                }
+                // thêm avatar mới vào
+                String foderName = "SchoolManager/Student";
+                String avatarFileName = student.getMssv() + "--" + student.getName().replace(" ", "") + ".jpg";
+                String filedId = googleService.uploadFile(avatar, foderName, "anyone", "reader", avatarFileName);
+                String livelink = googleService.getLiveLink(filedId);
+                student.setAvatar(livelink);
+                studentRepository.save(student);
+            }
+        } catch (GeneralSecurityException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

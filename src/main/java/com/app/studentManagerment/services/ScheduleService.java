@@ -1,5 +1,7 @@
 package com.app.studentManagerment.services;
 
+import com.app.studentManagerment.entity.Requests;
+
 public interface ScheduleService {
-    String autoGenerateSchedule(String semesterName);
+    void autoGenerateSchedule(String semesterName, Requests requests);
 }

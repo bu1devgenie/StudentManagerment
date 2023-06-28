@@ -18,6 +18,7 @@ public interface StudentListMapper {
     @Mapping(source = "address", target = "address")
     @Mapping(source = "email", target = "account.email")
     @Mapping(source = "avatar", target = "avatar")
+    @Mapping(source = "gender", target = "gender")
     Student studentDtoToStudent(StudentDto studentDto);
 
     @Mapping(source = "id", target = "id")
@@ -28,6 +29,7 @@ public interface StudentListMapper {
     @Mapping(source = "address", target = "address")
     @Mapping(source = "account.email", target = "email")
     @Mapping(source = "avatar", target = "avatar")
+    @Mapping(source = "gender", target = "gender")
     StudentDto StudentToStudentDto(Student student);
 
 

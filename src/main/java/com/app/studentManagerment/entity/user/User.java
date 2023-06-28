@@ -1,9 +1,11 @@
 package com.app.studentManagerment.entity.user;
 
 import com.app.studentManagerment.entity.Account;
+import com.app.studentManagerment.enumPack.Gender;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+
 @Entity
 @Table(name = "user")
 
@@ -29,22 +31,25 @@ public class User {
     @JoinColumn(name = "account_id")
     private Account account;
 
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
     public User() {
     }
 
-    public User(long id, String name, String address, LocalDate dob, String avatar, Account account) {
+    public User(long id, String name, String address, LocalDate dob, String avatar, Account account, Gender gender) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.dob = dob;
         this.avatar = avatar;
         this.account = account;
+        this.gender = gender;
     }
 
     public long getId() {
         return id;
     }
-
 
     public void setId(long id) {
         this.id = id;
@@ -90,15 +95,24 @@ public class User {
         this.account = account;
     }
 
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
     @Override
     public String toString() {
         return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", address='" + address + '\'' +
-                ", dob=" + dob +
-                ", avatar='" + avatar + '\'' +
-                ", account=" + account +
-                '}';
+               "id=" + id +
+               ", name='" + name + '\'' +
+               ", address='" + address + '\'' +
+               ", dob=" + dob +
+               ", avatar='" + avatar + '\'' +
+               ", account=" + account +
+               ", gender=" + gender +
+               '}';
     }
 }

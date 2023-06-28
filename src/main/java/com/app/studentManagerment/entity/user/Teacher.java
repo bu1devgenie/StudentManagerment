@@ -2,6 +2,7 @@ package com.app.studentManagerment.entity.user;
 
 import com.app.studentManagerment.entity.Account;
 import com.app.studentManagerment.entity.Course;
+import com.app.studentManagerment.enumPack.Gender;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Cascade;
 
@@ -30,6 +31,11 @@ public class Teacher {
 
     @Column(name = "avatar", nullable = true)
     private String avatar;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+
+
 
     @Cascade(org.hibernate.annotations.CascadeType.MERGE)
     @ManyToMany()
@@ -45,12 +51,13 @@ public class Teacher {
     public Teacher() {
     }
 
-    public Teacher( String msgv, String name, String address, LocalDate dob, String avatar, List<Course> course, Account account) {
+    public Teacher(String msgv, String name, String address, LocalDate dob, String avatar, Gender gender, List<Course> course, Account account) {
         this.msgv = msgv;
         this.name = name;
         this.address = address;
         this.dob = dob;
         this.avatar = avatar;
+        this.gender = gender;
         this.course = course;
         this.account = account;
     }
@@ -119,17 +126,26 @@ public class Teacher {
         this.account = account;
     }
 
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
     @Override
     public String toString() {
         return "Teacher{" +
-                "id=" + id +
-                ", msgv='" + msgv + '\'' +
-                ", name='" + name + '\'' +
-                ", address='" + address + '\'' +
-                ", dob=" + dob +
-                ", avatar='" + avatar + '\'' +
-                ", course=" + course +
-                ", account=" + account +
-                '}';
+               "id=" + id +
+               ", msgv='" + msgv + '\'' +
+               ", name='" + name + '\'' +
+               ", address='" + address + '\'' +
+               ", dob=" + dob +
+               ", avatar='" + avatar + '\'' +
+               ", gender=" + gender +
+               ", course=" + course +
+               ", account=" + account +
+               '}';
     }
 }

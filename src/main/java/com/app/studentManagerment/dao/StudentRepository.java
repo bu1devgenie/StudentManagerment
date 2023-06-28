@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface StudentRepository extends JpaRepository<Student, Long> {
     @Query("""
-            SELECT new com.app.studentManagerment.dto.StudentDto(stu.id, stu.mssv, stu.currentSemester, stu.name, stu.dob, stu.address, stu.avatar, a.email)
+            SELECT new com.app.studentManagerment.dto.StudentDto(stu.id, stu.mssv, stu.currentSemester, stu.name, stu.dob, stu.address, stu.avatar, a.email,stu.gender)
             FROM Student stu LEFT JOIN Account a ON a.id = stu.account.id
                         WHERE ((:type='' or :type like 'mssv') and (:searchTerm IS NULL OR stu.mssv LIKE CONCAT('%', :searchTerm, '%')))
                         OR ((:type='' or :type like 'name') and (:searchTerm IS NULL OR stu.name LIKE CONCAT('%', :searchTerm, '%')))

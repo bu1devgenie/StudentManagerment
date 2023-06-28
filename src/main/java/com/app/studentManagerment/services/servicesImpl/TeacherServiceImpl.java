@@ -7,22 +7,23 @@ import com.app.studentManagerment.dao.TeacherRepository;
 import com.app.studentManagerment.dto.TeacherDto;
 import com.app.studentManagerment.dto.mapper.TeacherListMapper;
 import com.app.studentManagerment.entity.*;
-import com.app.studentManagerment.dto.Course_TeacherDto;
 import com.app.studentManagerment.entity.user.Teacher;
+import com.app.studentManagerment.enumPack.Gender;
 import com.app.studentManagerment.services.GoogleService;
 import com.app.studentManagerment.services.TeacherService;
 import org.hibernate.sql.exec.ExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 @Service
 public class TeacherServiceImpl implements TeacherService {
@@ -71,25 +72,8 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public Teacher addTeacher(List<String> course, String name, LocalDate dob, String address, MultipartFile avatar) {
+    public TeacherDto addTeacher(List<String> course, String name, LocalDate dob, String address, MultipartFile avatar, Gender gender) {
         String msgv = getMSGV();
-        String foderName = "StudentManager/Teacher";
-        String avatarFileName = msgv + "--" + name.replace(" ", "") + ".jpg";
-
-        CompletableFuture<String> futureLink = CompletableFuture.completedFuture(null);
-        if (avatar != null) {
-            // Nếu avatar khác null, tạo một CompletableFuture để tạo link từ file avatar
-            futureLink = CompletableFuture.supplyAsync(() -> {
-                try {
-                    String fileId = googleService.uploadFile(avatar, foderName, "anyone", "reader", avatarFileName);
-                    return googleService.getLiveLink(fileId);
-                } catch (Exception e) {
-                    throw new CompletionException(e);
-                }
-            });
-        }
-
-        // Tạo đối tượng Teacher và lưu vào database
         Teacher theTeacher = new Teacher();
         theTeacher.setMsgv(msgv.trim());
         theTeacher.setName(name.replace("\\s+", " "));
@@ -104,26 +88,15 @@ public class TeacherServiceImpl implements TeacherService {
         } else {
             theTeacher.setCourse(null);
         }
+        theTeacher = teacherRepository.save(theTeacher);
+        addImage(theTeacher, avatar);
+        return teacherListMapper.teacherToTeacherDTO(theTeacher);
 
-        // Chỉ chờ kết quả tạo link nếu avatar khác null
-        String liveLink = null;
-        if (avatar != null) {
-            try {
-                liveLink = futureLink.get();
-            } catch (InterruptedException | ExecutionException ex) {
-                throw new RuntimeException(ex);
-            } catch (java.util.concurrent.ExecutionException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        theTeacher.setAvatar(liveLink);
-
-        return teacherRepository.save(theTeacher);
     }
 
 
     @Override
-    public TeacherDto updateTeacher(String msgvUpdate, String name, String address, LocalDate dob, MultipartFile avatar, List<String> courses, String email) throws Exception {
+    public TeacherDto updateTeacher(String msgvUpdate, String name, String address, LocalDate dob, MultipartFile avatar, List<String> courses, String email, Gender gender) throws Exception {
         Teacher teacher = teacherRepository.findByMsgv(msgvUpdate);
         if (teacher != null) {
             if (name != null) {
@@ -134,32 +107,6 @@ public class TeacherServiceImpl implements TeacherService {
             }
             if (dob != null) {
                 teacher.setDob(dob);
-            }
-            if (avatar != null) {
-                // tìm avatar cũ của teacher
-                //  xóa nó đi
-                if (teacher.getAvatar() != null && teacher.getAvatar().contains("https://drive.google.com/uc?id=")) {
-                    String fileId = teacher.getAvatar().substring(31);
-                    googleService.deleteFileOrFolder(fileId);
-                }
-                // thêm avatar mới vào
-                String foderName = "StudentManager/Student";
-                String avatarFileName = msgvUpdate + "--" + name.replace(" ", "") + ".jpg";
-                CompletableFuture<String> futureLink = CompletableFuture.supplyAsync(() -> {
-                    try {
-                        String filedId = googleService.uploadFile(avatar, foderName, "anyone", "reader", avatarFileName);
-                        return googleService.getLiveLink(filedId);
-                    } catch (Exception e) {
-                        throw new CompletionException(e);
-                    }
-                });
-                // set vào thuộc tính để thêm vào db
-                try {
-                    String livelink = futureLink.get();
-                    teacher.setAvatar(livelink);
-                } catch (InterruptedException | ExecutionException | java.util.concurrent.ExecutionException ex) {
-                    throw new RuntimeException(ex);
-                }
             }
             if (courses != null) {
                 if (teacher.getCourse() != null) {
@@ -184,7 +131,8 @@ public class TeacherServiceImpl implements TeacherService {
                     }
                 }
             }
-            teacherRepository.save(teacher);
+            teacher = teacherRepository.save(teacher);
+            addImage(teacher, avatar);
             return teacherListMapper.teacherToTeacherDTO(teacher);
         }
         return null;
@@ -211,5 +159,32 @@ public class TeacherServiceImpl implements TeacherService {
         return null;
     }
 
+    @Async
+    public void addImage(Teacher theTeacher, MultipartFile avatar) {
+        try {
+            if (theTeacher.getAvatar() != null) {
+                // tìm avatar cũ của teacher
+                //  xóa nó đi
+                if (theTeacher.getAvatar() != null && theTeacher.getAvatar().contains("https://drive.google.com/uc?id=")) {
+                    String fileId = theTeacher.getAvatar().substring(31);
+                    googleService.deleteFileOrFolder(fileId);
+                }
+                // thêm avatar mới vào
+                String foderName = "SchoolManager/Teacher";
+                String avatarFileName = theTeacher.getMsgv() + "--" + theTeacher.getName().replace(" ", "") + ".jpg";
+
+                String filedId = googleService.uploadFile(avatar, foderName, "anyone", "reader", avatarFileName);
+                String livelink = googleService.getLiveLink(filedId);
+                theTeacher.setAvatar(livelink);
+                teacherRepository.save(theTeacher);
+            }
+        } catch (GeneralSecurityException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

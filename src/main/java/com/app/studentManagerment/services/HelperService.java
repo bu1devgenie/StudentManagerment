@@ -6,4 +6,6 @@ import java.io.IOException;
 
 public interface HelperService {
     public MultipartFile FileWithNewName(MultipartFile multipartFile,String newName) throws IOException;
+
+
 }

@@ -4,14 +4,14 @@ import com.app.studentManagerment.dao.*;
 import com.app.studentManagerment.dto.RoomAndSlotCanTakeClass;
 import com.app.studentManagerment.entity.*;
 import com.app.studentManagerment.entity.user.Teacher;
+import com.app.studentManagerment.enumPack.enumRole;
 import com.app.studentManagerment.services.ClassRoomService;
+import com.app.studentManagerment.services.RequestService;
 import com.app.studentManagerment.services.ScheduleService;
-import org.apache.logging.log4j.message.AsynchronouslyFormattable;
-import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.app.studentManagerment.enumPack.enumRole;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -19,6 +19,7 @@ import java.util.List;
 
 @Service
 public class ScheduleServiceImple implements ScheduleService {
+    private RequestService requestService;
     private SemesterRepository semesterRepository;
     private CourseRepository courseRepository;
     private StudentRepository studentRepository;
@@ -30,7 +31,8 @@ public class ScheduleServiceImple implements ScheduleService {
     private EmailServiceImpl emailService;
     private MailProRepository mailProRepository;
 
-    public ScheduleServiceImple( SemesterRepository semesterRepository, CourseRepository courseRepository, StudentRepository studentRepository, ClassroomRepository classroomRepository, ClassRoomService classRoomService, SessionRepository sessionRepository, RoomRepository roomRepository, TeacherRepository teacherRepository, EmailServiceImpl emailService, MailProRepository mailProRepository) {
+    public ScheduleServiceImple(RequestService requestService, SemesterRepository semesterRepository, CourseRepository courseRepository, StudentRepository studentRepository, ClassroomRepository classroomRepository, ClassRoomService classRoomService, SessionRepository sessionRepository, RoomRepository roomRepository, TeacherRepository teacherRepository, EmailServiceImpl emailService, MailProRepository mailProRepository) {
+        this.requestService = requestService;
         this.semesterRepository = semesterRepository;
         this.courseRepository = courseRepository;
         this.studentRepository = studentRepository;
@@ -45,12 +47,15 @@ public class ScheduleServiceImple implements ScheduleService {
 
     int[][] dayClass = {{2, 4, 6}, {2, 4}, {4, 6}, {3, 5}};
 
+    @Transactional
+    @Async
     @Override
-    public String autoGenerateSchedule(String semesterName) {
+    public void autoGenerateSchedule(String semesterName, Requests requests) {
+        requestService.changeStatus(requests, Requests.Status.PROCESSING);
         Semester semester = semesterRepository.findByName(semesterName);
         // kiểm tra semester có tồn tại không
         if (semester == null) {
-            return null;
+            requestService.changeStatus(requests, Requests.Status.UNPROCESSED);
         }
         for (int i = 0; i <= 10; i++) {
             List<Course> courses = courseRepository.findAllByCourseSemester(i);
@@ -138,13 +143,15 @@ public class ScheduleServiceImple implements ScheduleService {
                 }
             }
         }
-        // gọi đến async để gửi mail với list giáo viên được xếp lịch ở trên
+        // gọi đến async void để gửi mail với list giáo viên được xếp lịch ở trên
         List<String> emails = teacherRepository.getAllEmailTeacherHaveClass(semester.getId());
         MailPro mailPro = mailProRepository.getMailProWithRole(enumRole.mail_PQLDT.toString());
         JavaMailSender sender = emailService.getJavaMailSender(mailPro);
-        emailService.sendMessageWithHtmlTemplate(emails, mailPro, sender, "", "/templates/NewScheduleReport.html");
+        if (!emails.isEmpty() && mailPro != null && sender != null) {
+            emailService.sendMessageWithHtmlTemplate(emails, mailPro, sender, "Lịch dạy học mới!!", "/templates/NewScheduleReport.html");
+        }
         //
-        return "Create Successful";
+        requestService.changeStatus(requests, Requests.Status.DONE);
     }
 
 

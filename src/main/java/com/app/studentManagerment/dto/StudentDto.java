@@ -1,5 +1,8 @@
 package com.app.studentManagerment.dto;
 
+import com.app.studentManagerment.entity.user.Student;
+import com.app.studentManagerment.enumPack.Gender;
+
 import java.time.LocalDate;
 
 
@@ -12,11 +15,12 @@ public class StudentDto {
     private String address;
     private String avatar;
     private String email;
+    private Gender gender;
 
     public StudentDto() {
     }
 
-    public StudentDto(long id, String mssv, int currentSemester, String name, LocalDate dob, String address, String avatar, String email) {
+    public StudentDto(long id, String mssv, int currentSemester, String name, LocalDate dob, String address, String avatar, String email, Gender gender) {
         this.id = id;
         this.mssv = mssv;
         this.currentSemester = currentSemester;
@@ -25,6 +29,7 @@ public class StudentDto {
         this.address = address;
         this.avatar = avatar;
         this.email = email;
+        this.gender = gender;
     }
 
     public long getId() {
@@ -91,17 +96,27 @@ public class StudentDto {
         this.email = email;
     }
 
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
     @Override
     public String toString() {
         return "StudentDto{" +
-                "id=" + id +
-                ", mssv='" + mssv + '\'' +
-                ", currentSemester=" + currentSemester +
-                ", name='" + name + '\'' +
-                ", dob=" + dob +
-                ", address='" + address + '\'' +
-                ", avatar='" + avatar + '\'' +
-                ", email='" + email + '\'' +
-                '}';
+               "id=" + id +
+               ", mssv='" + mssv + '\'' +
+               ", currentSemester=" + currentSemester +
+               ", name='" + name + '\'' +
+               ", dob=" + dob +
+               ", address='" + address + '\'' +
+               ", avatar='" + avatar + '\'' +
+               ", email='" + email + '\'' +
+               ", gender=" + gender +
+               '}';
     }
 }

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta  charset="UTF-8">
+    <meta charset="UTF-8">
     <title>Title</title>
     <!--    <script type="text/javascript" th:src="@{/js/home.js}"></script>-->
     <link rel="stylesheet" type="text/css" th:href="@{/css/home.css}"/>
@@ -241,9 +241,16 @@
                     });
 
                     var pageHtml = "";
-                    for (let i = 0; i < data.totalPages; i++) {
+                    if (data.totalPages > 0 && data.totalPages <= 15) {
                         pageHtml += "<li class=\"page-item\"><a class=\"page-link\" onclick=\"searchStudent(" + i + ")\">" + (i + 1) + "</a></li>";
+
+                    } else if (data.totalPages > 15) {
+                        for (let i = 0; i <= 5; i++) {
+                            pageHtml += "<li class=\"page-item\"><a class=\"page-link\" onclick=\"searchStudent(" + i + ")\">" + (i + 1) + "</a></li>";
+                        }
+                        for (let i= t)
                     }
+
                     values.innerHTML = "<div class=\"card\">\n" +
                         "    <div  class=\"card-header\">\n" +
                         "        <h1 style='width: 100%'>List student</h1>\n"

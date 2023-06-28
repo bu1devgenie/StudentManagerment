@@ -17,5 +17,6 @@ public interface UserListMapper {
     @Mapping(source = "address", target = "address")
     @Mapping(source = "account.email", target = "email")
     @Mapping(source = "avatar", target = "avatar")
+    @Mapping(source = "gender", target = "gender")
     UserDto UserToUserDto(User user);
 }

@@ -2,6 +2,7 @@ package com.app.studentManagerment.entity.user;
 
 import com.app.studentManagerment.entity.Account;
 import com.app.studentManagerment.entity.ClassRoom;
+import com.app.studentManagerment.enumPack.Gender;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Cascade;
 
@@ -28,6 +29,10 @@ public class Student {
 
     @Column(name = "dob", nullable = false)
     private LocalDate dob;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+
 
     @Column(name = "avatar", nullable = true)
     private String avatar;
@@ -46,12 +51,13 @@ public class Student {
     public Student() {
     }
 
-    public Student(long id, String name, String mssv, String address, LocalDate dob, String avatar, int currentSemester, Account account, List<ClassRoom> classRooms) {
+    public Student(long id, String name, String mssv, String address, LocalDate dob, Gender gender, String avatar, int currentSemester, Account account, List<ClassRoom> classRooms) {
         this.id = id;
         this.name = name;
         this.mssv = mssv;
         this.address = address;
         this.dob = dob;
+        this.gender = gender;
         this.avatar = avatar;
         this.currentSemester = currentSemester;
         this.account = account;
@@ -98,6 +104,14 @@ public class Student {
         this.dob = dob;
     }
 
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
     public String getAvatar() {
         return avatar;
     }
@@ -133,15 +147,16 @@ public class Student {
     @Override
     public String toString() {
         return "Student{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", mssv='" + mssv + '\'' +
-                ", address='" + address + '\'' +
-                ", dob=" + dob +
-                ", avatar='" + avatar + '\'' +
-                ", currentSemester=" + currentSemester +
-                ", account=" + account +
-                ", classRooms=" + classRooms +
-                '}';
+               "id=" + id +
+               ", name='" + name + '\'' +
+               ", mssv='" + mssv + '\'' +
+               ", address='" + address + '\'' +
+               ", dob=" + dob +
+               ", gender=" + gender +
+               ", avatar='" + avatar + '\'' +
+               ", currentSemester=" + currentSemester +
+               ", account=" + account +
+               ", classRooms=" + classRooms +
+               '}';
     }
 }
