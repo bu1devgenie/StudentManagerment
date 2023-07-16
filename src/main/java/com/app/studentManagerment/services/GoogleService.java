@@ -2,6 +2,7 @@ package com.app.studentManagerment.services;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.Permission;
+import jakarta.servlet.ServletException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -11,13 +12,13 @@ import java.util.List;
 
 public interface GoogleService {
     // Get all file
-    public List listEverything() throws IOException, GeneralSecurityException;
+    public List listEverything() throws IOException, GeneralSecurityException, ServletException;
 
     // Get all folder
-    public List listFolderContent(String parentId) throws IOException, GeneralSecurityException;
+    public List listFolderContent(String parentId) throws IOException, GeneralSecurityException, ServletException;
 
     // Download file by id
-    public void downloadFile(String id, OutputStream outputStream) throws IOException, GeneralSecurityException;
+    public void downloadFile(String id, OutputStream outputStream) throws IOException, GeneralSecurityException, ServletException;
 
     // Delete file by id
     public void deleteFileOrFolder(String fileId) throws Exception;
@@ -38,6 +39,6 @@ public interface GoogleService {
     public String searchFolderId(String parentId, String folderName, Drive service) throws Exception;
 
     //
-    public String getLiveLink(String fileId) throws IOException, GeneralSecurityException;
+    public String getLiveLink(String fileId) throws IOException, GeneralSecurityException, ServletException;
 
 }

@@ -23,10 +23,18 @@ public class RoomRestController {
 
     @PostMapping("/addRoom")
     public Room addRoom(@RequestParam(name = "address") String address, @RequestParam(name = "name") String name) {
-        for (int i = 1; i < 50; i++) {
-            roomServices.addRoom("Address" + i, "Room" + i);
-        }
-//        return roomServices.addRoom(address, name);
-        return null;
+        return roomServices.addRoom(address, name);
+    }
+
+    @PutMapping("updateRoom")
+    public Room roomUpdateRoom(@RequestParam(name = "oldName") String oldName,
+                               @RequestParam(name = "address") String address,
+                               @RequestParam(name = "newName") String newName) {
+        return roomServices.updateRoom(oldName,address, newName);
+    }
+
+    @DeleteMapping("/deleteRoom")
+    public boolean deleteRoom(@RequestParam(name = "name") String name) {
+        return roomServices.deleteRoom(name);
     }
 }

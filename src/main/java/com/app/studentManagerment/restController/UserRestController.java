@@ -57,7 +57,7 @@ public class UserRestController {
             @RequestParam(name = "dob", required = false) LocalDate dob,
             @RequestParam(name = "avatar", required = false) MultipartFile avatar,
             @RequestParam(name = "email", required = false) String email) throws Exception {
-        return userService.updateUser(id,name, address, dob, avatar, email);
+        return userService.updateUser(id, name, address, dob, avatar, email);
     }
 
     @DeleteMapping("/deleteUser")

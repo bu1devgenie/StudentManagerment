@@ -2,36 +2,29 @@ package com.app.studentManagerment.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "account")
 
 public class Account {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
     @Column(name = "email", nullable = false, length = 50)
     private String email;
-    @Column(name = "password", nullable = false, length = 50)
+    @Column(name = "password", nullable = false, length = 255)
     private String password;
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
-
-    public Account(String email, String password, Role role) {
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "account_role", joinColumns = @JoinColumn(name = "email"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private List<Role> role;
 
     public Account() {
     }
 
-    public long getId() {
-        return id;
-    }
 
-    public void setId(long id) {
-        this.id = id;
+    public Account(String email, String password, List<Role> role) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
     }
 
     public String getEmail() {
@@ -50,21 +43,20 @@ public class Account {
         this.password = password;
     }
 
-    public Role getRole() {
+    public List<Role> getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(List<Role> role) {
         this.role = role;
     }
 
     @Override
     public String toString() {
         return "Account{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", role=" + role +
-                '}';
+               "email='" + email + '\'' +
+               ", password='" + password + '\'' +
+               ", role=" + role +
+               '}';
     }
 }

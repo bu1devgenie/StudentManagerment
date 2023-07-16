@@ -1,6 +1,7 @@
 package com.app.studentManagerment.entity;
 
 import jakarta.persistence.*;
+import com.app.studentManagerment.enumPack.enumRole;
 
 @Entity
 @Table(name = "role")
@@ -9,14 +10,15 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(name = "role", nullable = false, length = 50)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private enumRole name;
 
     public Role() {
     }
 
-    public Role(String role) {
-        this.role = role;
+    public Role(long id, enumRole name) {
+        this.id = id;
+        this.name = name;
     }
 
     public long getId() {
@@ -27,19 +29,19 @@ public class Role {
         this.id = id;
     }
 
-    public String getRole() {
-        return role;
+    public enumRole getName() {
+        return name;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setName(enumRole name) {
+        this.name = name;
     }
 
     @Override
     public String toString() {
         return "Role{" +
-                "id=" + id +
-                ", role='" + role + '\'' +
-                '}';
+               "id=" + id +
+               ", name=" + name +
+               '}';
     }
 }

@@ -8,7 +8,9 @@ import com.app.studentManagerment.dto.mapper.StudentListMapper;
 import com.app.studentManagerment.entity.Account;
 import com.app.studentManagerment.entity.ClassRoom;
 import com.app.studentManagerment.entity.user.Student;
-import com.app.studentManagerment.enumPack.Gender;
+import com.app.studentManagerment.enumPack.enumGender;
+import com.app.studentManagerment.enumPack.enumRole;
+import com.app.studentManagerment.services.AccountService;
 import com.app.studentManagerment.services.GoogleService;
 import com.app.studentManagerment.services.StudentService;
 import org.springframework.data.domain.Page;
@@ -31,13 +33,16 @@ public class StudentServiceImpl implements StudentService {
     private final StudentListMapper studentListMapper;
     private final AccountRepository accountRepository;
     private final ClassroomRepository classroomRepository;
+    private final AccountService accountService;
 
-    public StudentServiceImpl(StudentRepository studentRepository, GoogleService googleService, StudentListMapper studentListMapper, AccountRepository accountRepository, ClassroomRepository classroomRepository) {
+
+    public StudentServiceImpl(StudentRepository studentRepository, GoogleService googleService, StudentListMapper studentListMapper, AccountRepository accountRepository, ClassroomRepository classroomRepository, AccountService accountService) {
         this.studentRepository = studentRepository;
         this.googleService = googleService;
         this.studentListMapper = studentListMapper;
         this.accountRepository = accountRepository;
         this.classroomRepository = classroomRepository;
+        this.accountService = accountService;
     }
 
 
@@ -55,7 +60,12 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Student addStudent(int current_semester, String name, LocalDate dob, String address, MultipartFile avatarFile, Gender gender) throws GeneralSecurityException, IOException {
+    public Student findByMssv(String mssv) {
+        return studentRepository.findByMssv(mssv);
+    }
+
+    @Override
+    public Student addStudent(int current_semester, String name, LocalDate dob, String address, MultipartFile avatarFile, enumGender enumGender) throws GeneralSecurityException, IOException {
         String mssv = getMSSV();
         // Tạo đối tượng Student và lưu vào database
         Student theStudent = new Student();
@@ -64,14 +74,17 @@ public class StudentServiceImpl implements StudentService {
         theStudent.setName(name);
         theStudent.setDob(dob);
         theStudent.setAddress(address.trim());
-        theStudent.setGender(gender);
+        theStudent.setGender(enumGender);
+        Account a = accountService.autoCreateAccount(name, theStudent.getMssv(), enumRole.Student);
+        if (a != null) {
+            theStudent.setAccount(a);
+        }
         theStudent = studentRepository.save(theStudent);
         addImage(theStudent, avatarFile);
         return theStudent;
     }
-
     @Override
-    public StudentDto updateStudent(String mssv, int current_semester, String mail, String name, LocalDate dob, String address, MultipartFile avatarFile, Gender gender) throws Exception {
+    public StudentDto updateStudent(String mssv, int current_semester, String mail, String name, LocalDate dob, String address, MultipartFile avatarFile, enumGender enumGender) throws Exception {
         Student theStudent = studentRepository.findByMssv(mssv);
         if (theStudent != null) {
             if (current_semester > 0) {
@@ -90,13 +103,17 @@ public class StudentServiceImpl implements StudentService {
             if (address != null) {
                 theStudent.setAddress(address);
             }
-            if (gender != null) {
-                theStudent.setGender(gender);
+            if (enumGender != null) {
+                theStudent.setGender(enumGender);
             }
+
         } else {
             return null;
         }
-        studentRepository.save(theStudent);
+        theStudent = studentRepository.save(theStudent);
+        if (!avatarFile.isEmpty()) {
+            addImage(theStudent, avatarFile);
+        }
         return studentListMapper.StudentToStudentDto(theStudent);
     }
 
@@ -136,8 +153,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Page<StudentDto> search(String searchTerm, String type, Pageable pageable) {
-        Page<StudentDto> studentDtos = studentRepository.search(searchTerm, type, pageable);
+    public Page<StudentDto> search(String mssv, String name, String email, Pageable pageable) {
+        Page<StudentDto> studentDtos = studentRepository.search(mssv, name, email, pageable);
         return studentDtos;
     }
 
@@ -163,14 +180,14 @@ public class StudentServiceImpl implements StudentService {
                     String fileId = student.getAvatar().substring(31);
                     googleService.deleteFileOrFolder(fileId);
                 }
-                // thêm avatar mới vào
-                String foderName = "SchoolManager/Student";
-                String avatarFileName = student.getMssv() + "--" + student.getName().replace(" ", "") + ".jpg";
-                String filedId = googleService.uploadFile(avatar, foderName, "anyone", "reader", avatarFileName);
-                String livelink = googleService.getLiveLink(filedId);
-                student.setAvatar(livelink);
-                studentRepository.save(student);
             }
+            // thêm avatar mới vào
+            String foderName = "SchoolManager/Student";
+            String avatarFileName = student.getMssv() + "--" + student.getName().replace(" ", "") + ".jpg";
+            String filedId = googleService.uploadFile(avatar, foderName, "anyone", "reader", avatarFileName);
+            String livelink = googleService.getLiveLink(filedId);
+            student.setAvatar(livelink);
+            studentRepository.save(student);
         } catch (GeneralSecurityException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {

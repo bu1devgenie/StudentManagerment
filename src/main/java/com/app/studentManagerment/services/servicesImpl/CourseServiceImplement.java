@@ -57,6 +57,11 @@ public class CourseServiceImplement implements CourseService {
     }
 
     @Override
+    public Course findCourseByCourseName(String name) {
+        return courseRepository.findByName(name);
+    }
+
+    @Override
     public Boolean shutdownCourse(long id) {
         Course course = courseRepository.findById(id);
         if (course != null && course.isActivity()) {

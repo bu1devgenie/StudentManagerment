@@ -8,10 +8,11 @@ import com.app.studentManagerment.dto.TeacherDto;
 import com.app.studentManagerment.dto.mapper.TeacherListMapper;
 import com.app.studentManagerment.entity.*;
 import com.app.studentManagerment.entity.user.Teacher;
-import com.app.studentManagerment.enumPack.Gender;
+import com.app.studentManagerment.enumPack.enumGender;
+import com.app.studentManagerment.enumPack.enumRole;
+import com.app.studentManagerment.services.AccountService;
 import com.app.studentManagerment.services.GoogleService;
 import com.app.studentManagerment.services.TeacherService;
-import org.hibernate.sql.exec.ExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,15 +34,17 @@ public class TeacherServiceImpl implements TeacherService {
     private TeacherListMapper teacherListMapper;
     private AccountRepository accountRepository;
     private ClassroomRepository classroomRepository;
+    private AccountService accountService;
 
     @Autowired
-    public TeacherServiceImpl(TeacherRepository teacherRepository, GoogleService googleService, CourseRepository courseRepository, TeacherListMapper teacherListMapper, AccountRepository accountRepository, ClassroomRepository classroomRepository) {
+    public TeacherServiceImpl(TeacherRepository teacherRepository, GoogleService googleService, CourseRepository courseRepository, TeacherListMapper teacherListMapper, AccountRepository accountRepository, ClassroomRepository classroomRepository, AccountService accountService) {
         this.teacherRepository = teacherRepository;
         this.googleService = googleService;
         this.courseRepository = courseRepository;
         this.teacherListMapper = teacherListMapper;
         this.accountRepository = accountRepository;
         this.classroomRepository = classroomRepository;
+        this.accountService = accountService;
     }
 
 
@@ -50,6 +53,11 @@ public class TeacherServiceImpl implements TeacherService {
         Page<Teacher> teachers = teacherRepository.search(searchText, type, pageable);
         Page<TeacherDto> teacherDtos = teachers.map(teacher -> teacherListMapper.teacherToTeacherDTO(teacher));
         return teacherDtos;
+    }
+
+    @Override
+    public Teacher getTeacherByMsgv(String msgv) {
+        return teacherRepository.findByMsgv(msgv);
     }
 
     @Override
@@ -72,7 +80,7 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public TeacherDto addTeacher(List<String> course, String name, LocalDate dob, String address, MultipartFile avatar, Gender gender) {
+    public TeacherDto addTeacher(List<String> course, String name, LocalDate dob, String address, MultipartFile avatar, enumGender enumGender) {
         String msgv = getMSGV();
         Teacher theTeacher = new Teacher();
         theTeacher.setMsgv(msgv.trim());
@@ -88,6 +96,10 @@ public class TeacherServiceImpl implements TeacherService {
         } else {
             theTeacher.setCourse(null);
         }
+        Account a = accountService.autoCreateAccount(name, theTeacher.getMsgv(), enumRole.Teacher);
+        if (a != null) {
+            theTeacher.setAccount(a);
+        }
         theTeacher = teacherRepository.save(theTeacher);
         addImage(theTeacher, avatar);
         return teacherListMapper.teacherToTeacherDTO(theTeacher);
@@ -96,7 +108,7 @@ public class TeacherServiceImpl implements TeacherService {
 
 
     @Override
-    public TeacherDto updateTeacher(String msgvUpdate, String name, String address, LocalDate dob, MultipartFile avatar, List<String> courses, String email, Gender gender) throws Exception {
+    public TeacherDto updateTeacher(String msgvUpdate, String name, String address, LocalDate dob, MultipartFile avatar, List<String> courses, String email, enumGender enumGender) throws Exception {
         Teacher teacher = teacherRepository.findByMsgv(msgvUpdate);
         if (teacher != null) {
             if (name != null) {

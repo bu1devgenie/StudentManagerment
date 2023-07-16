@@ -9,15 +9,23 @@ import java.util.List;
 @RestController
 @RequestMapping("/account")
 public class AccountRestController {
-    @Autowired
-    private AccountService accountService;
+	@Autowired
+	private AccountService accountService;
 
-    public AccountRestController(AccountService accountService) {
-        this.accountService = accountService;
-    }
+	public AccountRestController(AccountService accountService) {
+		this.accountService = accountService;
+	}
 
-    @GetMapping("/findAllEmailNoConnected")
-    public List<String> allAccountNoConected() {
-        return accountService.findallEmailNoConnected();
-    }
+	@GetMapping("/findAllEmailNoConnected")
+	public List<String> allAccountNoConected() {
+		return accountService.findallEmailNoConnected();
+	}
+
+	@PostMapping("/creatAccount")
+	public List<String> creatAccount(@RequestParam("") String email) {
+//		return accountService.createAccount(email, );
+
+		return null;
+	}
+
 }

@@ -6,10 +6,12 @@ import java.util.List;
 
 public interface CourseService {
     List<String> getAllNameOfCourse();
+
     List<Course> getAllCourse();
 
     Course updateCourse(long id, String name, int totalSlot, int courseSemester);
 
+    Course findCourseByCourseName(String name);
 
     Boolean shutdownCourse(long id);
 

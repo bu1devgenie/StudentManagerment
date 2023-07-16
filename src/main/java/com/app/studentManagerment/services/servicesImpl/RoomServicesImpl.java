@@ -33,4 +33,27 @@ public class RoomServicesImpl implements RoomServices {
         room = roomRepository.save(room);
         return room;
     }
+
+    @Override
+    public boolean deleteRoom(String name) {
+        Room room = roomRepository.findByName(name);
+        if (room != null) {
+            roomRepository.delete(room);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Room updateRoom(String oldName, String address, String newName) {
+        Room room = roomRepository.findByName(oldName);
+        if (room != null) {
+            room.setName(newName);
+            room.setAddress(address);
+            return roomRepository.save(room);
+        }
+        return null;
+    }
+
+
 }

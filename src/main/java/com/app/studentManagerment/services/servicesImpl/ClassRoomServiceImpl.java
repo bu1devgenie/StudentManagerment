@@ -22,12 +22,12 @@ import java.util.List;
 
 @Service
 public class ClassRoomServiceImpl implements ClassRoomService {
-    private ClassroomRepository classroomRepository;
-    private TeacherRepository teacherRepository;
-    private CourseRepository courseRepository;
-    private StudentRepository studentRepository;
-    private SemesterRepository semesterRepository;
-    private ClassRoomListMapper classRoomListMapper;
+    private final ClassroomRepository classroomRepository;
+    private final TeacherRepository teacherRepository;
+    private final CourseRepository courseRepository;
+    private final StudentRepository studentRepository;
+    private final SemesterRepository semesterRepository;
+    private final ClassRoomListMapper classRoomListMapper;
 
     public ClassRoomServiceImpl(ClassroomRepository classroomRepository, TeacherRepository teacherRepository, CourseRepository courseRepository, StudentRepository studentRepository, SemesterRepository semesterRepository, ClassRoomListMapper classRoomListMapper) {
         this.classroomRepository = classroomRepository;
@@ -47,7 +47,7 @@ public class ClassRoomServiceImpl implements ClassRoomService {
         Pageable pageable = PageRequest.of(0, 10);
         Page<ClassRoom> classRoom = classroomRepository.searchClassRoom(semester_name, msgv, courseName, currentSlot, learning, pageable);
 //        Page<ClassRoom> classRoom = classroomRepository.searchClassRoom( msgv, pageable);
-        Page<ClassRoomDto> classRoomDtos = classRoom.map(classRoomSub -> classRoomListMapper.classRoomToclassRoomDto(classRoomSub));
+        Page<ClassRoomDto> classRoomDtos = classRoom.map(classRoomListMapper::classRoomToclassRoomDto);
         return classRoomDtos;
     }
 
@@ -55,7 +55,7 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     public Page<ClassRoomDto> getAll() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<ClassRoom> classRoom = classroomRepository.getAllDto(pageable);
-        Page<ClassRoomDto> classRoomDtos = classRoom.map(classSub -> classRoomListMapper.classRoomToclassRoomDto(classSub));
+        Page<ClassRoomDto> classRoomDtos = classRoom.map(classRoomListMapper::classRoomToclassRoomDto);
         return classRoomDtos;
     }
 
@@ -113,5 +113,14 @@ public class ClassRoomServiceImpl implements ClassRoomService {
         return false;
     }
 
-
+    @Override
+    public boolean ShutdownClassRoom(String className, boolean isShutdown) {
+        ClassRoom classRoom = classroomRepository.findByName(className);
+        if (classRoom != null) {
+            classRoom.setLearning(isShutdown);
+            classroomRepository.save(classRoom);
+            return true;
+        }
+        return false;
+    }
 }

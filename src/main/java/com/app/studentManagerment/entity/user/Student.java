@@ -2,7 +2,7 @@ package com.app.studentManagerment.entity.user;
 
 import com.app.studentManagerment.entity.Account;
 import com.app.studentManagerment.entity.ClassRoom;
-import com.app.studentManagerment.enumPack.Gender;
+import com.app.studentManagerment.enumPack.enumGender;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Cascade;
 
@@ -30,7 +30,7 @@ public class Student {
     @Column(name = "dob", nullable = false)
     private LocalDate dob;
     @Enumerated(EnumType.STRING)
-    private Gender gender;
+    private enumGender enumGender;
 
 
 
@@ -51,13 +51,13 @@ public class Student {
     public Student() {
     }
 
-    public Student(long id, String name, String mssv, String address, LocalDate dob, Gender gender, String avatar, int currentSemester, Account account, List<ClassRoom> classRooms) {
+    public Student(long id, String name, String mssv, String address, LocalDate dob, enumGender enumGender, String avatar, int currentSemester, Account account, List<ClassRoom> classRooms) {
         this.id = id;
         this.name = name;
         this.mssv = mssv;
         this.address = address;
         this.dob = dob;
-        this.gender = gender;
+        this.enumGender = enumGender;
         this.avatar = avatar;
         this.currentSemester = currentSemester;
         this.account = account;
@@ -104,12 +104,12 @@ public class Student {
         this.dob = dob;
     }
 
-    public Gender getGender() {
-        return gender;
+    public enumGender getGender() {
+        return enumGender;
     }
 
-    public void setGender(Gender gender) {
-        this.gender = gender;
+    public void setGender(enumGender enumGender) {
+        this.enumGender = enumGender;
     }
 
     public String getAvatar() {
@@ -152,7 +152,7 @@ public class Student {
                ", mssv='" + mssv + '\'' +
                ", address='" + address + '\'' +
                ", dob=" + dob +
-               ", gender=" + gender +
+               ", gender=" + enumGender +
                ", avatar='" + avatar + '\'' +
                ", currentSemester=" + currentSemester +
                ", account=" + account +

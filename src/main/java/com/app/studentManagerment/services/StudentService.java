@@ -2,7 +2,7 @@ package com.app.studentManagerment.services;
 
 import com.app.studentManagerment.dto.StudentDto;
 import com.app.studentManagerment.entity.user.Student;
-import com.app.studentManagerment.enumPack.Gender;
+import com.app.studentManagerment.enumPack.enumGender;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,11 +17,13 @@ public interface StudentService {
 
     Student findById(long id);
 
+    Student findByMssv(String mssv);
+
     Student addStudent(int current_semester,
                        String name,
                        LocalDate dob,
                        String address,
-                       MultipartFile avatarFile, Gender gender) throws GeneralSecurityException, IOException;
+                       MultipartFile avatarFile, enumGender enumGender) throws GeneralSecurityException, IOException;
 
     StudentDto updateStudent(String mssv,
                              int current_semester,
@@ -29,13 +31,13 @@ public interface StudentService {
                              String Name,
                              LocalDate dob,
                              String address,
-                             MultipartFile avatarFile, Gender gender) throws Exception;
+                             MultipartFile avatarFile, enumGender enumGender) throws Exception;
 
     boolean deleteStudent(String mssv);
 
     String getMSSV();
 
-    Page<StudentDto> search(String searchTerm, String type, Pageable pageable);
+    Page<StudentDto> search(String mssv, String name, String email, Pageable pageable);
 
     List<StudentDto> getAllStudentWithCurrentSemester(int currentSemester);
 

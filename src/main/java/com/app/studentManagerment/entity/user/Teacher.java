@@ -2,7 +2,7 @@ package com.app.studentManagerment.entity.user;
 
 import com.app.studentManagerment.entity.Account;
 import com.app.studentManagerment.entity.Course;
-import com.app.studentManagerment.enumPack.Gender;
+import com.app.studentManagerment.enumPack.enumGender;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Cascade;
 
@@ -32,7 +32,7 @@ public class Teacher {
     @Column(name = "avatar", nullable = true)
     private String avatar;
     @Enumerated(EnumType.STRING)
-    private Gender gender;
+    private enumGender enumGender;
 
 
 
@@ -51,13 +51,13 @@ public class Teacher {
     public Teacher() {
     }
 
-    public Teacher(String msgv, String name, String address, LocalDate dob, String avatar, Gender gender, List<Course> course, Account account) {
+    public Teacher(String msgv, String name, String address, LocalDate dob, String avatar, enumGender enumGender, List<Course> course, Account account) {
         this.msgv = msgv;
         this.name = name;
         this.address = address;
         this.dob = dob;
         this.avatar = avatar;
-        this.gender = gender;
+        this.enumGender = enumGender;
         this.course = course;
         this.account = account;
     }
@@ -126,12 +126,12 @@ public class Teacher {
         this.account = account;
     }
 
-    public Gender getGender() {
-        return gender;
+    public enumGender getGender() {
+        return enumGender;
     }
 
-    public void setGender(Gender gender) {
-        this.gender = gender;
+    public void setGender(enumGender enumGender) {
+        this.enumGender = enumGender;
     }
 
     @Override
@@ -143,7 +143,7 @@ public class Teacher {
                ", address='" + address + '\'' +
                ", dob=" + dob +
                ", avatar='" + avatar + '\'' +
-               ", gender=" + gender +
+               ", gender=" + enumGender +
                ", course=" + course +
                ", account=" + account +
                '}';

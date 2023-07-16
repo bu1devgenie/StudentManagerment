@@ -1,7 +1,6 @@
 package com.app.studentManagerment.dto;
 
-import com.app.studentManagerment.entity.user.User;
-import com.app.studentManagerment.enumPack.Gender;
+import com.app.studentManagerment.enumPack.enumGender;
 
 import java.time.LocalDate;
 
@@ -12,19 +11,19 @@ public class UserDto {
     private String address;
     private String avatar;
     private String email;
-    private Gender gender;
+    private enumGender enumGender;
 
     public UserDto() {
     }
 
-    public UserDto(long id, String name, LocalDate dob, String address, String avatar, String email, Gender gender) {
+    public UserDto(long id, String name, LocalDate dob, String address, String avatar, String email, enumGender enumGender) {
         this.id = id;
         this.name = name;
         this.dob = dob;
         this.address = address;
         this.avatar = avatar;
         this.email = email;
-        this.gender = gender;
+        this.enumGender = enumGender;
     }
 
     public long getId() {
@@ -75,12 +74,12 @@ public class UserDto {
         this.email = email;
     }
 
-    public Gender getGender() {
-        return gender;
+    public enumGender getGender() {
+        return enumGender;
     }
 
-    public void setGender(Gender gender) {
-        this.gender = gender;
+    public void setGender(enumGender enumGender) {
+        this.enumGender = enumGender;
     }
 
     @Override
@@ -92,7 +91,7 @@ public class UserDto {
                ", address='" + address + '\'' +
                ", avatar='" + avatar + '\'' +
                ", email='" + email + '\'' +
-               ", gender=" + gender +
+               ", gender=" + enumGender +
                '}';
     }
 }

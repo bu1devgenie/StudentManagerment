@@ -1,7 +1,7 @@
 package com.app.studentManagerment.entity.user;
 
 import com.app.studentManagerment.entity.Account;
-import com.app.studentManagerment.enumPack.Gender;
+import com.app.studentManagerment.enumPack.enumGender;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -17,6 +17,8 @@ public class User {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "ms", nullable = false)
+    private String ms;
     @Column(name = "address", nullable = false)
     private String address;
 
@@ -32,19 +34,20 @@ public class User {
     private Account account;
 
     @Enumerated(EnumType.STRING)
-    private Gender gender;
+    private enumGender enumGender;
 
     public User() {
     }
 
-    public User(long id, String name, String address, LocalDate dob, String avatar, Account account, Gender gender) {
+    public User(long id, String name, String ms, String address, LocalDate dob, String avatar, Account account, enumGender enumGender) {
         this.id = id;
         this.name = name;
+        this.ms = ms;
         this.address = address;
         this.dob = dob;
         this.avatar = avatar;
         this.account = account;
-        this.gender = gender;
+        this.enumGender = enumGender;
     }
 
     public long getId() {
@@ -61,6 +64,22 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getMs() {
+        return ms;
+    }
+
+    public void setMs(String ms) {
+        this.ms = ms;
+    }
+
+    public com.app.studentManagerment.enumPack.enumGender getEnumGender() {
+        return enumGender;
+    }
+
+    public void setEnumGender(com.app.studentManagerment.enumPack.enumGender enumGender) {
+        this.enumGender = enumGender;
     }
 
     public String getAddress() {
@@ -95,12 +114,12 @@ public class User {
         this.account = account;
     }
 
-    public Gender getGender() {
-        return gender;
+    public enumGender getGender() {
+        return enumGender;
     }
 
-    public void setGender(Gender gender) {
-        this.gender = gender;
+    public void setGender(enumGender enumGender) {
+        this.enumGender = enumGender;
     }
 
     @Override
@@ -108,11 +127,12 @@ public class User {
         return "User{" +
                "id=" + id +
                ", name='" + name + '\'' +
+               ", ms='" + ms + '\'' +
                ", address='" + address + '\'' +
                ", dob=" + dob +
                ", avatar='" + avatar + '\'' +
                ", account=" + account +
-               ", gender=" + gender +
+               ", enumGender=" + enumGender +
                '}';
     }
 }

@@ -3,7 +3,7 @@ package com.app.studentManagerment.restController;
 
 import com.app.studentManagerment.dto.StudentDto;
 import com.app.studentManagerment.entity.user.Student;
-import com.app.studentManagerment.enumPack.Gender;
+import com.app.studentManagerment.enumPack.enumGender;
 import com.app.studentManagerment.services.HelperService;
 import com.app.studentManagerment.services.StudentService;
 import org.springframework.data.domain.Page;
@@ -35,7 +35,7 @@ public class StudentRestController {
     @GetMapping("/findAll")
     public Page<StudentDto> findAll() {
         Pageable pageable = PageRequest.of(0, 10);
-        return studentServices.search("", "", pageable);
+        return studentServices.search(null, null, null, pageable);
     }
 
     @PostMapping("/addStudent")
@@ -45,22 +45,22 @@ public class StudentRestController {
             @RequestParam LocalDate dob,
             @RequestParam String address,
             @RequestParam(name = "avatarFile", required = false) MultipartFile avatarFile,
-            @RequestParam(name = "gender", required = false) Gender gender) throws IOException, GeneralSecurityException {
+            @RequestParam(name = "enumGender", required = false) enumGender enumGender) throws IOException, GeneralSecurityException {
 //      =========================
 
-        return studentServices.addStudent(current_semester, name, dob, address, avatarFile, gender);
+        return studentServices.addStudent(current_semester, name, dob, address, avatarFile, enumGender);
     }
 
     @PostMapping("/searchStudent")
-    public Page<StudentDto> searchStudent(@RequestParam(name = "type") String type,
-                                          @RequestParam(name = "searchText") String searchText,
+    public Page<StudentDto> searchStudent(@RequestParam(name = "mssv") String mssv,
+                                          @RequestParam(name = "name") String name,
+                                          @RequestParam(name = "email") String email,
                                           @RequestParam(name = "targetPageNumber") Integer targetPageNumber) {
         if (targetPageNumber < 0) {
             return null;
         }
         Pageable pageable = PageRequest.of(targetPageNumber, 10);
-        return studentServices.search(searchText, type, pageable);
-
+        return studentServices.search(mssv, name, email, pageable);
     }
 
     @DeleteMapping("/deleteStudent")
@@ -76,9 +76,8 @@ public class StudentRestController {
                                                  @RequestParam(name = "dobUpdate", required = false) LocalDate dob,
                                                  @RequestParam(name = "addressUpdate", required = false) String address,
                                                  @RequestParam(name = "avatar", required = false) MultipartFile avatarFile,
-                                                 @RequestParam(name = "gender", required = false) Gender gender) throws Exception {
+                                                 @RequestParam(name = "enumGender", required = false) enumGender enumGender) throws Exception {
 
-
-        return studentServices.updateStudent(mssv, current_semester, mail, name, dob, address, avatarFile, gender);
+        return studentServices.updateStudent(mssv, current_semester, mail, name, dob, address, avatarFile, enumGender);
     }
 }

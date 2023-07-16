@@ -7,6 +7,7 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.Permission;
+import jakarta.servlet.ServletException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +25,7 @@ public class GoogleServiceImpl implements GoogleService {
     private GoogleDriveConfig googleDriveConfig;
 
     @Override
-    public List listEverything() throws IOException, GeneralSecurityException {
+    public List listEverything() throws IOException, GeneralSecurityException, ServletException {
         FileList result = googleDriveConfig.getInstance().files().list()
                 .setPageSize(1000)
                 .setFields("nextPageToken, files(id, name, size, thumbnailLink, shared)") // get field of google drive file
@@ -34,7 +35,7 @@ public class GoogleServiceImpl implements GoogleService {
     }
 
     @Override
-    public List listFolderContent(String parentId) throws IOException, GeneralSecurityException {
+    public List listFolderContent(String parentId) throws IOException, GeneralSecurityException, ServletException {
         if (parentId == null) {
             parentId = "root";
         }
@@ -49,7 +50,7 @@ public class GoogleServiceImpl implements GoogleService {
     }
 
     @Override
-    public void downloadFile(String id, OutputStream outputStream) throws IOException, GeneralSecurityException {
+    public void downloadFile(String id, OutputStream outputStream) throws IOException, GeneralSecurityException, ServletException {
         if (id != null) {
             googleDriveConfig.getInstance().files()
                     .get(id).executeMediaAndDownloadTo(outputStream);
@@ -181,7 +182,7 @@ public class GoogleServiceImpl implements GoogleService {
     }
 
     @Override
-    public String getLiveLink(String fileId) throws IOException, GeneralSecurityException {
+    public String getLiveLink(String fileId) throws IOException, GeneralSecurityException, ServletException {
         Permission permission = new Permission()
                 .setType("anyone")
                 .setRole("reader");

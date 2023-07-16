@@ -1,9 +1,11 @@
 package com.app.studentManagerment.dao;
 
 import com.app.studentManagerment.entity.Account;
+import com.app.studentManagerment.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import com.app.studentManagerment.enumPack.enumRole;
 
 import java.util.List;
 
@@ -16,7 +18,10 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
             """)
     List<String> findallEmailNoConnected();
 
-    Account findByEmail(String email);
+    @Query("""
+            select a from Account a where a.email=:email
+            """)
+    Account findByEmail(@Param("email") String email);
 
     @Query("""
             SELECT CASE WHEN EXISTS (
@@ -32,4 +37,9 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
             END AS account_exists
             """)
     Boolean emailIsConnected(String email);
+
+    @Query("""
+            SELECT a.role from Account a where a.email=:email
+            """)
+    List<Role> allRoleByEmail(String email);
 }

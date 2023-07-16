@@ -34,7 +34,7 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
     Page<Teacher> search(@Param("searchTerm") String searchTerm,
                          @Param("type") String type, Pageable pageable);
 
-    Teacher findByMsgv(String msgvUpdate);
+    Teacher findByMsgv(String msgv);
 
     @Query(value = """
             SELECT t.*,

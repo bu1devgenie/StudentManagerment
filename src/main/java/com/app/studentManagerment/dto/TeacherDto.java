@@ -1,7 +1,6 @@
 package com.app.studentManagerment.dto;
 
-import com.app.studentManagerment.entity.user.Teacher;
-import com.app.studentManagerment.enumPack.Gender;
+import com.app.studentManagerment.enumPack.enumGender;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,12 +14,12 @@ public class TeacherDto {
     private String avatar;
     private List<CourseDto> course;
     private String email;
-    private Gender gender;
+    private enumGender enumGender;
 
     public TeacherDto() {
     }
 
-    public TeacherDto(long id, String msgv, String name, String address, LocalDate dob, String avatar, List<CourseDto> course, String email,  Gender gender) {
+    public TeacherDto(long id, String msgv, String name, String address, LocalDate dob, String avatar, List<CourseDto> course, String email,  enumGender enumGender) {
         this.id = id;
         this.msgv = msgv;
         this.name = name;
@@ -29,15 +28,15 @@ public class TeacherDto {
         this.avatar = avatar;
         this.course = course;
         this.email = email;
-        this.gender = gender;
+        this.enumGender = enumGender;
     }
 
-    public  Gender getGender() {
-        return gender;
+    public enumGender getGender() {
+        return enumGender;
     }
 
-    public void setGender( Gender gender) {
-        this.gender = gender;
+    public void setGender( enumGender enumGender) {
+        this.enumGender = enumGender;
     }
 
     public long getId() {
@@ -115,7 +114,7 @@ public class TeacherDto {
                ", avatar='" + avatar + '\'' +
                ", course=" + course +
                ", email='" + email + '\'' +
-               ", gender=" + gender +
+               ", gender=" + enumGender +
                '}';
     }
 }
