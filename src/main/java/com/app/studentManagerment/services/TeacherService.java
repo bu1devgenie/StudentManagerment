@@ -32,4 +32,6 @@ public interface TeacherService {
                                                      long courseId,
                                                      int[] dayOfWeak,
                                                      int[] slot_of_day);
+
+	Teacher findStudentByEmail(String email);
 }

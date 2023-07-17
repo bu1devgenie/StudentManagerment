@@ -1,6 +1,7 @@
 package com.app.studentManagerment.services;
 
 import com.app.studentManagerment.dto.UserDto;
+import com.app.studentManagerment.entity.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,4 +16,6 @@ public interface UserService {
     UserDto updateUser(Long id,String name, String address, LocalDate dob, MultipartFile avatar, String email) throws Exception;
 
     boolean deleteUser(long id);
+
+	User findStudentByEmail(String email);
 }

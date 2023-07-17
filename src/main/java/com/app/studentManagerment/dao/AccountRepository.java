@@ -11,35 +11,35 @@ import java.util.List;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
-    @Query("""
-                     select a.email from Account a where a.id not in (select account.id from Student where account.id is not null )
-                     and    a.id not in (select account.id from Teacher where account.id is not null )
-                     and    a.id not in (select account.id from User where account.id is not null )
-            """)
-    List<String> findallEmailNoConnected();
+	@Query("""
+			         select a.email from Account a where a.email not in (select account.email from Student where account.email is not null )
+			         and    a.email not in (select account.email from Teacher where account.email is not null )
+			         and    a.email not in (select account.email from User where account.email is not null )
+			""")
+	List<String> findallEmailNoConnected();
 
-    @Query("""
-            select a from Account a where a.email=:email
-            """)
-    Account findByEmail(@Param("email") String email);
+	@Query("""
+			select a from Account a where a.email=:email
+			""")
+	Account findByEmail(@Param("email") String email);
 
-    @Query("""
-            SELECT CASE WHEN EXISTS (
-                SELECT 1
-                FROM Account a
-                JOIN Teacher tea ON tea.account.id = a.id
-                JOIN User u ON u.account.id = a.id
-                JOIN Student stu ON stu.account.id = a.id
-                WHERE a.email LIKE :email
-            )
-            THEN TRUE
-            ELSE FALSE
-            END AS account_exists
-            """)
-    Boolean emailIsConnected(String email);
+	@Query("""
+			SELECT CASE WHEN EXISTS (
+			    SELECT 1
+			    FROM Account a
+			    JOIN Teacher tea ON tea.account.email = a.email
+			    JOIN User u ON u.account.email = a.email
+			    JOIN Student stu ON stu.account.email = a.email
+			    WHERE a.email LIKE :email
+			)
+			THEN TRUE
+			ELSE FALSE
+			END AS account_exists
+			""")
+	Boolean emailIsConnected(String email);
 
-    @Query("""
-            SELECT a.role from Account a where a.email=:email
-            """)
-    List<Role> allRoleByEmail(String email);
+	@Query("""
+			SELECT a.role from Account a where a.email=:email
+			""")
+	List<Role> allRoleByEmail(String email);
 }

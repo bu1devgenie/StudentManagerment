@@ -30,7 +30,7 @@ public class User {
 
 
 	@ManyToOne
-	@JoinColumn(name = "account_id")
+	@JoinColumn(name = "email")
 	private Account account;
 
 	@Enumerated(EnumType.STRING)

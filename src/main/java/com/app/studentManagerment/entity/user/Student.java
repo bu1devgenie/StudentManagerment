@@ -40,7 +40,7 @@ public class Student {
 	private int currentSemester;
 
 	@OneToOne
-	@JoinColumn(name = "account_id")
+	@JoinColumn(name = "email")
 	private Account account;
 
 	@Cascade(org.hibernate.annotations.CascadeType.MERGE)

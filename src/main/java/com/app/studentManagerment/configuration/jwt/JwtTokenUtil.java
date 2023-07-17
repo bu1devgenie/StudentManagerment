@@ -45,7 +45,7 @@ public class JwtTokenUtil {
 		String accessToken = Jwts.builder()
 				.setSubject(String.format("%s", account.getUsername()))
 				.claim("roles", account.getAuthorities().toString())
-				.setIssuer("TimesheetWebapp")
+				.setIssuer("TruongLang")
 				.setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRED_DAY))
 				.signWith(SignatureAlgorithm.HS512, SECRET_KEY)
@@ -101,8 +101,6 @@ public class JwtTokenUtil {
 	public String getAccessToken(HttpServletRequest request) {
 		String header = request.getHeader("Authorization");
 
-		String token = header.split(" ")[1].trim();
-
-		return token;
+		return header.split(" ")[1].trim();
 	}
 }

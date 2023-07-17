@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface StudentService {
-
+    Student findStudentByEmail(String email);
 
     Student findById(long id);
 

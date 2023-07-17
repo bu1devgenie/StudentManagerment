@@ -45,7 +45,7 @@ public class Teacher {
     private List<Course> course;
 
     @OneToOne
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "email")
     private Account account;
 
     public Teacher() {
