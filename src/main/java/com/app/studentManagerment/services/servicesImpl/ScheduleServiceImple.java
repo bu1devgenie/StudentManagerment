@@ -5,6 +5,7 @@ import com.app.studentManagerment.dto.RoomAndSlotCanTakeClass;
 import com.app.studentManagerment.entity.*;
 import com.app.studentManagerment.entity.user.Teacher;
 import com.app.studentManagerment.enumPack.enumRole;
+import com.app.studentManagerment.enumPack.enumStatus;
 import com.app.studentManagerment.services.ClassRoomService;
 import com.app.studentManagerment.services.RequestService;
 import com.app.studentManagerment.services.ScheduleService;
@@ -51,11 +52,11 @@ public class ScheduleServiceImple implements ScheduleService {
     @Async
     @Override
     public void autoGenerateSchedule(String semesterName, Requests requests) {
-        requestService.changeStatus(requests, Requests.Status.PROCESSING);
+        requestService.changeStatus(requests, enumStatus.PROCESSING);
         Semester semester = semesterRepository.findByName(semesterName);
         // kiểm tra semester có tồn tại không
         if (semester == null) {
-            requestService.changeStatus(requests, Requests.Status.UNPROCESSED);
+            requestService.changeStatus(requests, enumStatus.UNPROCESSED);
         }
         for (int i = 0; i <= 10; i++) {
             List<Course> courses = courseRepository.findAllByCourseSemester(i);
@@ -151,7 +152,7 @@ public class ScheduleServiceImple implements ScheduleService {
             emailService.sendMessageWithHtmlTemplate(emails, mailPro, sender, "Lịch dạy học mới!!", "/templates/NewScheduleReport.html");
         }
         //
-        requestService.changeStatus(requests, Requests.Status.DONE);
+        requestService.changeStatus(requests, enumStatus.DONE);
     }
 
 
