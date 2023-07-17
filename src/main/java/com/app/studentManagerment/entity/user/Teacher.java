@@ -16,7 +16,7 @@ public class Teacher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(name = "msgv", nullable = false)
+    @Column(name = "msgv", nullable = false,unique = true)
     private String msgv;
 
 

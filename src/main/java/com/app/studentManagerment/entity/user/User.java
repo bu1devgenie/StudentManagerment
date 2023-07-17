@@ -10,129 +10,129 @@ import java.time.LocalDate;
 @Table(name = "user")
 
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+	@Column(name = "name", nullable = false)
+	private String name;
 
-    @Column(name = "ms", nullable = false)
-    private String ms;
-    @Column(name = "address", nullable = false)
-    private String address;
+	@Column(name = "ms", nullable = false, unique = true)
+	private String ms;
+	@Column(name = "address", nullable = false)
+	private String address;
 
-    @Column(name = "dob", nullable = false)
-    private LocalDate dob;
+	@Column(name = "dob", nullable = false)
+	private LocalDate dob;
 
-    @Column(name = "avatar", nullable = false)
-    private String avatar;
+	@Column(name = "avatar", nullable = false)
+	private String avatar;
 
 
-    @ManyToOne
-    @JoinColumn(name = "account_id")
-    private Account account;
+	@ManyToOne
+	@JoinColumn(name = "account_id")
+	private Account account;
 
-    @Enumerated(EnumType.STRING)
-    private enumGender enumGender;
+	@Enumerated(EnumType.STRING)
+	private enumGender enumGender;
 
-    public User() {
-    }
+	public User() {
+	}
 
-    public User(long id, String name, String ms, String address, LocalDate dob, String avatar, Account account, enumGender enumGender) {
-        this.id = id;
-        this.name = name;
-        this.ms = ms;
-        this.address = address;
-        this.dob = dob;
-        this.avatar = avatar;
-        this.account = account;
-        this.enumGender = enumGender;
-    }
+	public User(long id, String name, String ms, String address, LocalDate dob, String avatar, Account account, enumGender enumGender) {
+		this.id = id;
+		this.name = name;
+		this.ms = ms;
+		this.address = address;
+		this.dob = dob;
+		this.avatar = avatar;
+		this.account = account;
+		this.enumGender = enumGender;
+	}
 
-    public long getId() {
-        return id;
-    }
+	public long getId() {
+		return id;
+	}
 
-    public void setId(long id) {
-        this.id = id;
-    }
+	public void setId(long id) {
+		this.id = id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getMs() {
-        return ms;
-    }
+	public String getMs() {
+		return ms;
+	}
 
-    public void setMs(String ms) {
-        this.ms = ms;
-    }
+	public void setMs(String ms) {
+		this.ms = ms;
+	}
 
-    public com.app.studentManagerment.enumPack.enumGender getEnumGender() {
-        return enumGender;
-    }
+	public com.app.studentManagerment.enumPack.enumGender getEnumGender() {
+		return enumGender;
+	}
 
-    public void setEnumGender(com.app.studentManagerment.enumPack.enumGender enumGender) {
-        this.enumGender = enumGender;
-    }
+	public void setEnumGender(com.app.studentManagerment.enumPack.enumGender enumGender) {
+		this.enumGender = enumGender;
+	}
 
-    public String getAddress() {
-        return address;
-    }
+	public String getAddress() {
+		return address;
+	}
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+	public void setAddress(String address) {
+		this.address = address;
+	}
 
-    public LocalDate getDob() {
-        return dob;
-    }
+	public LocalDate getDob() {
+		return dob;
+	}
 
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
-    }
+	public void setDob(LocalDate dob) {
+		this.dob = dob;
+	}
 
-    public String getAvatar() {
-        return avatar;
-    }
+	public String getAvatar() {
+		return avatar;
+	}
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
+	}
 
-    public Account getAccount() {
-        return account;
-    }
+	public Account getAccount() {
+		return account;
+	}
 
-    public void setAccount(Account account) {
-        this.account = account;
-    }
+	public void setAccount(Account account) {
+		this.account = account;
+	}
 
-    public enumGender getGender() {
-        return enumGender;
-    }
+	public enumGender getGender() {
+		return enumGender;
+	}
 
-    public void setGender(enumGender enumGender) {
-        this.enumGender = enumGender;
-    }
+	public void setGender(enumGender enumGender) {
+		this.enumGender = enumGender;
+	}
 
-    @Override
-    public String toString() {
-        return "User{" +
-               "id=" + id +
-               ", name='" + name + '\'' +
-               ", ms='" + ms + '\'' +
-               ", address='" + address + '\'' +
-               ", dob=" + dob +
-               ", avatar='" + avatar + '\'' +
-               ", account=" + account +
-               ", enumGender=" + enumGender +
-               '}';
-    }
+	@Override
+	public String toString() {
+		return "User{" +
+		       "id=" + id +
+		       ", name='" + name + '\'' +
+		       ", ms='" + ms + '\'' +
+		       ", address='" + address + '\'' +
+		       ", dob=" + dob +
+		       ", avatar='" + avatar + '\'' +
+		       ", account=" + account +
+		       ", enumGender=" + enumGender +
+		       '}';
+	}
 }
