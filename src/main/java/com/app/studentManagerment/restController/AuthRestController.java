@@ -6,15 +6,14 @@ import com.app.studentManagerment.dto.AccountRequestDto;
 import com.app.studentManagerment.dto.AccountResponseDto;
 import com.app.studentManagerment.entity.Account;
 import com.app.studentManagerment.services.outCycle.AccountCycle;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping()
@@ -31,6 +30,7 @@ public class AuthRestController {
 
 
 	@PostMapping("/login")
+
 	public ResponseEntity<?> login(@RequestBody @Validated AccountRequestDto accountRequestDto) {
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(accountRequestDto.getEmail(), accountRequestDto.getPassword())
@@ -43,7 +43,16 @@ public class AuthRestController {
 			return null;
 		}
 		accountResponseDto.setAccessToken(jwtTokenUtil.generateAccessToken(account));
-		System.out.println(accountResponseDto.toString());
 		return ResponseEntity.ok(accountResponseDto);
+	}
+
+	@PostMapping("/checkAccessToken")
+	public ResponseEntity<?> checkAccessToken(HttpServletRequest request) {
+		String header = request.getHeader("Authorization");
+		String accessToken = header.split(" ")[1];
+		if (jwtTokenUtil.validateAccessToken(accessToken)) {
+			return ResponseEntity.ok(true);
+		}
+		return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(false);
 	}
 }

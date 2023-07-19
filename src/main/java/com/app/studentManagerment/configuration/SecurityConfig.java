@@ -67,9 +67,10 @@ public class SecurityConfig {
 	SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.csrf(AbstractHttpConfigurer::disable);
 		httpSecurity
-				.authorizeHttpRequests((authorize) -> authorize.
-								requestMatchers("/login").permitAll()
-						.requestMatchers("/student/findAll").hasAnyAuthority("Hr","Admin","Principal","Teacher")
+				.authorizeHttpRequests((authorize) -> authorize
+						.requestMatchers("/login").permitAll()
+						.requestMatchers("/checkAccessToken").permitAll()
+						.requestMatchers("/student/findAll").hasAnyAuthority("Hr", "Admin", "Principal", "Teacher")
 						.anyRequest().authenticated()
 				);
 		httpSecurity.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
