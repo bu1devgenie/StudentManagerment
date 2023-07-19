@@ -43,12 +43,12 @@ public class AccountCycleImpl implements AccountCycle {
 			dto.setMs(student.getMssv());
 			dto.setAvatar(student.getAvatar());
 		} else if (rolesList.contains(enumRole.Teacher)) {
-			Teacher teacher = teacherService.findStudentByEmail(email);
+			Teacher teacher = teacherService.findTeacherByEmail(email);
 			dto.setName(teacher.getName());
 			dto.setMs(teacher.getMsgv());
 			dto.setAvatar(teacher.getAvatar());
 		} else if (rolesList.contains(enumRole.Hr) || rolesList.contains(enumRole.Admin) || rolesList.contains(enumRole.Principal)) {
-			user = userService.findStudentByEmail(email);
+			user = userService.findUserByEmail(email);
 			dto.setName(user.getName());
 			dto.setMs(user.getMs());
 			dto.setAvatar(user.getAvatar());

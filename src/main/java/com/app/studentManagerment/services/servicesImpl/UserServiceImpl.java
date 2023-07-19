@@ -148,7 +148,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User findStudentByEmail(String email) {
-		return userRepository.findByAccount_Email(email);
+	public User findUserByEmail(String email) {
+		return userRepository.findUserByAccount_Email(email);
 	}
 }

@@ -93,7 +93,5 @@ public class EmailServiceImpl implements MailProService {
             throw new RuntimeException(e);
         }
     }
-
-
 }
 

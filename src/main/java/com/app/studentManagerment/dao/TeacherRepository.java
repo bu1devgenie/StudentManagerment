@@ -84,13 +84,14 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
 
 	@Query(value = """
 			select distinct a.email
-   			            from teacher t
-   			            join classroom c on t.id = c.teacher_id
-   			            join account a on a.email = t.email
-   			            where c.semester_id=:semesterId and t.email is not null
-   			            group by t.id
+						            from teacher t
+						            join classroom c on t.id = c.teacher_id
+						            join account a on a.email = t.email
+						            where c.semester_id=:semesterId and t.email is not null
+						            group by t.id
 			""", nativeQuery = true)
 	List<String> getAllEmailTeacherHaveClass(@Param("semesterId") Long semesterId);
 
-	Teacher findTeacherByAccount_Email(String email);
+
+	Teacher findTeacherByAccount_Email(@Param("email") String email);
 }

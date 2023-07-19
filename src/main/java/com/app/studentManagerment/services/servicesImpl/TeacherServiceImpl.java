@@ -172,7 +172,7 @@ public class TeacherServiceImpl implements TeacherService {
 	}
 
 	@Override
-	public Teacher findStudentByEmail(String email) {
+	public Teacher findTeacherByEmail(String email) {
 		return teacherRepository.findTeacherByAccount_Email(email);
 	}
 

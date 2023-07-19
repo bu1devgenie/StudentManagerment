@@ -71,10 +71,10 @@ public class SecurityConfig {
 						.requestMatchers("/login").permitAll()
 						.requestMatchers("/checkAccessToken").permitAll()
 						.requestMatchers("/student/findAll").hasAnyAuthority("Hr", "Admin", "Principal", "Teacher")
+						.requestMatchers("/schedule/autoGenerateSchedule").hasAnyAuthority("Principal")
 						.anyRequest().authenticated()
 				);
 		httpSecurity.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
 		return httpSecurity.build();
-
 	}
 }

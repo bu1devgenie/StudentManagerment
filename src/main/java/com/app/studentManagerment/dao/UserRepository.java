@@ -24,5 +24,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			""")
 	Page<User> search(@Param("searchTerm") String searchText, @Param("type") String type, Pageable pageable);
 
-	User findByAccount_Email(String email);
+	User findUserByAccount_Email(String email);
 }
