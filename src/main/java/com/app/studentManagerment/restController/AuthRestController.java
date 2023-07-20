@@ -30,7 +30,6 @@ public class AuthRestController {
 
 
 	@PostMapping("/login")
-
 	public ResponseEntity<?> login(@RequestBody @Validated AccountRequestDto accountRequestDto) {
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(accountRequestDto.getEmail(), accountRequestDto.getPassword())

@@ -18,6 +18,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 
 @Configuration
@@ -57,6 +60,17 @@ public class SecurityConfig {
 		return authProvider;
 	}
 
+	@Bean
+	public CorsFilter corsFilter() {
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		CorsConfiguration config = new CorsConfiguration();
+		config.setAllowCredentials(true);
+		config.addAllowedOrigin("http://localhost:3000");
+		config.addAllowedHeader("*");
+		config.addAllowedMethod("*");
+		source.registerCorsConfiguration("/**", config);
+		return new CorsFilter(source);
+	}
 
 	@Bean
 	AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
@@ -65,11 +79,18 @@ public class SecurityConfig {
 
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+		httpSecurity.cors(customizer -> {
+		});
+
 		httpSecurity.csrf(AbstractHttpConfigurer::disable);
 		httpSecurity
 				.authorizeHttpRequests((authorize) -> authorize
 						.requestMatchers("/login").permitAll()
 						.requestMatchers("/checkAccessToken").permitAll()
+						//teacher
+						.requestMatchers("/teacher/getAllTeacher").hasAnyAuthority("Hr", "Admin", "Principal", "Teacher")
+
+						//student
 						.requestMatchers("/student/findAll").hasAnyAuthority("Hr", "Admin", "Principal", "Teacher")
 						.requestMatchers("/schedule/autoGenerateSchedule").hasAnyAuthority("Principal")
 						.anyRequest().authenticated()

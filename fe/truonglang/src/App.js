@@ -1,34 +1,32 @@
 import {useState, useEffect} from 'react';
+import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import Home from './Home';
 
 function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Thêm state để lưu trạng thái đăng nhập
-
+  const navigate = useNavigate(); // Initialize useHistory
   useEffect(() => {
     // Kiểm tra có AccessToken trong cookie hay không
     const accessToken = Cookies.get('accessToken');
     if (accessToken !== undefined) {
       // Gọi server để kiểm tra access token
-      fetch('/checkAccessToken', {
+      fetch('http://localhost:9999/checkAccessToken', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': accessToken
+          'Authorization': 'Bearer '+accessToken
         },
       })
         .then((response) => {
           if (response.status === 200) {
-            setIsLoggedIn(true); // Đánh dấu là đã đăng nhập thành công
+            navigate('/home'); // Redirect to Home page
           } else {
             throw new Error('Hết phiên đăng nhập');
           }
         })
         .catch((error) => {
           alert(error.message);
-          setIsLoggedIn(false);
         });
     }
   }, []);
@@ -44,7 +42,7 @@ function App() {
   const handleSubmit = (event) => {
     event.preventDefault();
     // Gửi yêu cầu đăng nhập đến server
-    fetch('/login', {
+    fetch('http://localhost:9999/login', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({email, password}),
@@ -53,6 +51,7 @@ function App() {
         if (response.status === 403) {
           throw new Error('sai tk mk');
         }
+        console.log({response: response.body})
         return response.json(); // Chuyển đổi phản hồi thành JSON
       })
       .then((data) => {
@@ -62,7 +61,8 @@ function App() {
         Cookies.set('name', data.name);
         Cookies.set('avatar', data.avatar);
         Cookies.set('accessToken', data.accessToken);
-        setIsLoggedIn(true); // Đánh dấu là đã đăng nhập thành công
+        navigate('/home'); // Redirect to Home page
+        
       })
       .catch((error) => {
         alert(error.message);
@@ -71,9 +71,6 @@ function App() {
 
   return (
     <div>
-      {isLoggedIn ? (
-        <Home />
-      ) : (
         <div>
           <h2>Đăng nhập</h2>
           <form onSubmit={handleSubmit}>
@@ -99,7 +96,6 @@ function App() {
             <input type="submit" value="Đăng nhập" />
           </form>
         </div>
-      )}
     </div>
   );
 }
