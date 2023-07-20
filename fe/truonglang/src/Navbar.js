@@ -88,7 +88,7 @@ function Navbar() {
                         Attendance
                     </Nav.Link>
                 </Nav.Item>
-                <NavDropdown alignRight title="Username" id="nav-dropdown">
+                <NavDropdown title="Username" id="nav-dropdown">
                     <NavDropdown.Item eventKey="8.1">Profile</NavDropdown.Item>
                     <NavDropdown.Item eventKey="8.2">Account</NavDropdown.Item>
                     <NavDropdown.Divider />
