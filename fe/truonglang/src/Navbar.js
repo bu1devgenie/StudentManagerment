@@ -1,11 +1,39 @@
-import React from 'react';
 import {Nav, NavDropdown} from 'react-bootstrap';
-import {Link, Route, Routes, useNavigate} from 'react-router-dom'; // Import useNavigate
-import 'bootstrap/dist/css/bootstrap.min.css';
-
+import {useNavigate} from 'react-router-dom'; // Import useNavigate
+import React, {useState, useEffect} from 'react';
+import Cookies from 'js-cookie';
 
 function Navbar() {
     const navigate = useNavigate(); // Initialize useNavigate
+    const accessToken = Cookies.get('accessToken');
+    const Name = Cookies.get('name');
+
+    useEffect(() => {
+        // Kiểm tra có AccessToken trong cookie hay không
+        if (accessToken) {
+            // Gọi server để kiểm tra access token
+            fetch('http://localhost:9999/checkAccessToken', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + accessToken
+                },
+            })
+                .then((response) => {
+                    if (response.status === 200) {
+                        // Access token is valid, proceed to fetch teachers data
+                    } else {
+                        throw new Error('Hết phiên đăng nhập');
+                    }
+                })
+                .catch((error) => {
+                    alert(error.message);
+                    navigate('/login'); // Redirect to login page
+                });
+        } else {
+            navigate('/login'); // Redirect to login page if access token is not available
+        }
+    }, [navigate, accessToken]);
 
     const handleSelect = (eventKey) => {
         // Use navigate to change the URL path when an item is clicked
@@ -88,12 +116,15 @@ function Navbar() {
                         Attendance
                     </Nav.Link>
                 </Nav.Item>
-                <NavDropdown title="Username" id="nav-dropdown">
-                    <NavDropdown.Item eventKey="8.1">Profile</NavDropdown.Item>
-                    <NavDropdown.Item eventKey="8.2">Account</NavDropdown.Item>
-                    <NavDropdown.Divider />
-                    <NavDropdown.Item eventKey="8.3">Logout</NavDropdown.Item>
-                </NavDropdown>
+
+                <div style={{marginLeft: 'auto'}}>
+                    <NavDropdown title={Name} id="nav-dropdown">
+                        <NavDropdown.Item eventKey="8.1">Profile</NavDropdown.Item>
+                        <NavDropdown.Item eventKey="8.2">Account</NavDropdown.Item>
+                        <NavDropdown.Divider />
+                        <NavDropdown.Item eventKey="8.3">Logout</NavDropdown.Item>
+                    </NavDropdown>
+                </div>
             </Nav>
 
         </div>

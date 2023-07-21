@@ -15,58 +15,58 @@ import java.util.List;
 @RestController
 @RequestMapping("/teacher")
 public class TeacherRestController {
-    private TeacherService teacherService;
+	private TeacherService teacherService;
 
-    public TeacherRestController(TeacherService teacherService) {
-        this.teacherService = teacherService;
-    }
+	public TeacherRestController(TeacherService teacherService) {
+		this.teacherService = teacherService;
+	}
 
-    @GetMapping("/getMSGV")
-    public String getMSGV() {
-        return teacherService.getMSGV();
-    }
+	@GetMapping("/getMSGV")
+	public String getMSGV() {
+		return teacherService.getMSGV();
+	}
 
-    @PostMapping("/addTeacher")
-    public TeacherDto addTeacher(@RequestParam(name = "selectedCourse", required = false) List<String> courses,
-                                 @RequestParam(name = "name") String name,
-                                 @RequestParam(name = "dob") LocalDate dob,
-                                 @RequestParam(name = "address") String address,
-                                 @RequestParam(name = "avatarFile", required = false) MultipartFile avatar,
-                                 @RequestParam(name = "enumGender") enumGender enumGender) {
+	@PostMapping("/addTeacher")
+	public TeacherDto addTeacher(@RequestParam(name = "selectedCourse", required = false) List<String> courses,
+	                             @RequestParam(name = "name") String name,
+	                             @RequestParam(name = "dob") LocalDate dob,
+	                             @RequestParam(name = "address") String address,
+	                             @RequestParam(name = "avatarFile", required = false) MultipartFile avatar,
+	                             @RequestParam(name = "enumGender") enumGender enumGender) {
 
-        return teacherService.addTeacher(courses, name, dob, address, avatar, enumGender);
-    }
+		return teacherService.addTeacher(courses, name, dob, address, avatar, enumGender);
+	}
 
-    @PostMapping("/searchTeacher")
-    public Page<TeacherDto> searchTeacher(@RequestParam(name = "type") String type,
-                                          @RequestParam(name = "searchText") String searchText, @RequestParam(name = "targetPageNumber") Integer targetPageNumber) {
-        if (targetPageNumber < 0) {
-            return null;
-        }
-        Pageable pageable = PageRequest.of(targetPageNumber, 10);
-        return teacherService.search(searchText, type, pageable);
-    }
+	@PostMapping("/searchTeacher")
+	public Page<TeacherDto> searchTeacher(@RequestParam(name = "type", required = false) String type,
+	                                      @RequestParam(name = "searchText", required = false) String searchText, @RequestParam(name = "targetPageNumber") Integer targetPageNumber) {
+		if (targetPageNumber < 0) {
+			return null;
+		}
+		Pageable pageable = PageRequest.of(targetPageNumber, 10);
+		return teacherService.search(searchText, type, pageable);
+	}
 
-    @GetMapping("/getAllTeacher")
-    public Page<TeacherDto> getAllTeacher() {
-        return searchTeacher("", "", 0);
-    }
+	@GetMapping("/getAllTeacher")
+	public Page<TeacherDto> getAllTeacher() {
+		return searchTeacher("", "", 0);
+	}
 
-    @PutMapping("/updateTeacher")
-    public synchronized TeacherDto updateTeacher(@RequestParam(name = "msgvUpdate") String msgvUpdate,
-                                                 @RequestParam(name = "name", required = false) String name,
-                                                 @RequestParam(name = "address", required = false) String address,
-                                                 @RequestParam(name = "dob", required = false) LocalDate dob,
-                                                 @RequestParam(name = "avatar", required = false) MultipartFile avatar,
-                                                 @RequestParam(name = "course", required = false) List<String> courses,
-                                                 @RequestParam(name = "email", required = false) String email,
-                                                 @RequestParam(name = "enumGender") enumGender enumGender) throws Exception {
-        return teacherService.updateTeacher(msgvUpdate, name, address, dob, avatar, courses, email, enumGender);
-    }
+	@PutMapping("/updateTeacher")
+	public synchronized TeacherDto updateTeacher(@RequestParam(name = "msgvUpdate") String msgvUpdate,
+	                                             @RequestParam(name = "name", required = false) String name,
+	                                             @RequestParam(name = "address", required = false) String address,
+	                                             @RequestParam(name = "dob", required = false) LocalDate dob,
+	                                             @RequestParam(name = "avatar", required = false) MultipartFile avatar,
+	                                             @RequestParam(name = "course", required = false) List<String> courses,
+	                                             @RequestParam(name = "email", required = false) String email,
+	                                             @RequestParam(name = "enumGender") enumGender enumGender) throws Exception {
+		return teacherService.updateTeacher(msgvUpdate, name, address, dob, avatar, courses, email, enumGender);
+	}
 
-    @DeleteMapping("/deleteTeacher")
-    public synchronized boolean deleteTeacher(@RequestParam(name = "msgv") String msgv) {
+	@DeleteMapping("/deleteTeacher")
+	public synchronized boolean deleteTeacher(@RequestParam(name = "msgv") String msgv) {
 
-        return teacherService.deleteTeacher(msgv);
-    }
+		return teacherService.deleteTeacher(msgv);
+	}
 }

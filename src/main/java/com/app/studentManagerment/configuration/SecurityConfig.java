@@ -89,6 +89,7 @@ public class SecurityConfig {
 						.requestMatchers("/checkAccessToken").permitAll()
 						//teacher
 						.requestMatchers("/teacher/getAllTeacher").hasAnyAuthority("Hr", "Admin", "Principal", "Teacher")
+						.requestMatchers("/teacher/searchTeacher").hasAnyAuthority("Hr", "Admin", "Principal", "Teacher")
 
 						//student
 						.requestMatchers("/student/findAll").hasAnyAuthority("Hr", "Admin", "Principal", "Teacher")

@@ -1,7 +1,6 @@
 import {useState, useEffect} from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import Cookies from 'js-cookie';
-
 function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -15,7 +14,7 @@ function App() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer '+accessToken
+          'Authorization': 'Bearer ' + accessToken
         },
       })
         .then((response) => {
@@ -27,9 +26,10 @@ function App() {
         })
         .catch((error) => {
           alert(error.message);
+          navigate('/login'); // Redirect to login page
         });
     }
-  }, []);
+  }, [navigate]);
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -45,13 +45,12 @@ function App() {
     fetch('http://localhost:9999/login', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({email, password}),
+      body: JSON.stringify({email, password})
     })
       .then((response) => {
         if (response.status === 403) {
           throw new Error('sai tk mk');
         }
-        console.log({response: response.body})
         return response.json(); // Chuyển đổi phản hồi thành JSON
       })
       .then((data) => {
@@ -62,7 +61,7 @@ function App() {
         Cookies.set('avatar', data.avatar);
         Cookies.set('accessToken', data.accessToken);
         navigate('/home'); // Redirect to Home page
-        
+
       })
       .catch((error) => {
         alert(error.message);
@@ -71,31 +70,31 @@ function App() {
 
   return (
     <div>
-        <div>
-          <h2>Đăng nhập</h2>
-          <form onSubmit={handleSubmit}>
-            <label htmlFor="email">Tên đăng nhập:</label>
-            <br />
-            <input
-              type="text"
-              id="email"
-              value={email}
-              onChange={handleEmailChange}
-            />
-            <br />
-            <label htmlFor="password">Mật khẩu:</label>
-            <br />
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={handlePasswordChange}
-            />
-            <br />
-            <br />
-            <input type="submit" value="Đăng nhập" />
-          </form>
-        </div>
+      <div>
+        <h2>Đăng nhập</h2>
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="email">Tên đăng nhập:</label>
+          <br />
+          <input
+            type="text"
+            id="email"
+            value={email}
+            onChange={handleEmailChange}
+          />
+          <br />
+          <label htmlFor="password">Mật khẩu:</label>
+          <br />
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={handlePasswordChange}
+          />
+          <br />
+          <br />
+          <input type="submit" value="Đăng nhập" />
+        </form>
+      </div>
     </div>
   );
 }
