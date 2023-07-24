@@ -31,13 +31,13 @@ import java.util.List;
 
 @Component
 public class GoogleDriveConfig {
-	private static final String APPLICATION_NAME = "SchoolManager";
+	private static final String APPLICATION_NAME = "UniversityManager";
 	private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 	private static final String TOKENS_DIRECTORY_PATH = "tokens";
 	// path file Google Drive Service
-	private static final String CREDENTIALS_FILE_PATH = "/client_secret_506984316057-2bjacgkh3trub0eu7o9ciflen30hpca5.apps.googleusercontent.com.json";
+	private static final String CREDENTIALS_FILE_PATH = "/client_secret_506984316057-4qpm9s3ss290vvhe0hic2dajilt70079.apps.googleusercontent.com.json";
 	private static final List SCOPES = Collections.singletonList(DriveScopes.DRIVE);
-	private static final String REDIRECT_URI = "http://localhost:9999/callback";
+	private static final String REDIRECT_URI = "http://localhost:8081/callback";
 
 
 	private GGcloud_credentialRepository gGcloudCredentialRepository;
@@ -45,7 +45,6 @@ public class GoogleDriveConfig {
 	public GoogleDriveConfig(GGcloud_credentialRepository gGcloudCredentialRepository) {
 		this.gGcloudCredentialRepository = gGcloudCredentialRepository;
 	}
-
 
 	public Drive getInstance() throws GeneralSecurityException, IOException, ServletException {
 		final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
@@ -61,7 +60,8 @@ public class GoogleDriveConfig {
 			ggCloudCredential.setUpdateDate(LocalDateTime.now());
 		}
 		if (credential.getExpiresInSeconds() != null && credential.getExpiresInSeconds() <= 60) {
-			credential = refreshAccessToken();
+			credential.refreshToken();
+
 		}
 		Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
 				.setApplicationName(APPLICATION_NAME)
@@ -87,14 +87,10 @@ public class GoogleDriveConfig {
 		String authorizationUrl = url.build();
 
 		// open new web to author
-
-
+//		System.out.println(authorizationUrl);
 		return null;
 	}
 
-	private Credential refreshAccessToken() {
-		return null;
-	}
 
 	private Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
 		InputStream in = GoogleDriveConfig.class.getResourceAsStream(CREDENTIALS_FILE_PATH);

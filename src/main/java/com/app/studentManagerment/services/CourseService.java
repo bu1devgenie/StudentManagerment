@@ -19,4 +19,5 @@ public interface CourseService {
 
     List<Course> findCourseWithCurrentSemester(int currentSemester);
 
+    List<Course> searchByName(String courseName);
 }

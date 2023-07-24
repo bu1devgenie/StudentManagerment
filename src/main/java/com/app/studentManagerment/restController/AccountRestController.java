@@ -16,9 +16,9 @@ public class AccountRestController {
 		this.accountService = accountService;
 	}
 
-	@GetMapping("/findAllEmailNoConnected")
-	public List<String> allAccountNoConected() {
-		return accountService.findallEmailNoConnected();
+	@PostMapping("/searchEmailNoConnected")
+	public List<String> searchEmailNoConnected(@RequestParam(name = "email") String email) {
+			return accountService.searchEmailNoConnected(email);
 	}
 
 	@PostMapping("/creatAccount")

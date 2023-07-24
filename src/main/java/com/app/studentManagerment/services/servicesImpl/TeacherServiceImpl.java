@@ -136,7 +136,7 @@ public class TeacherServiceImpl implements TeacherService {
 			if (email != null) {
 				Account account = accountRepository.findByEmail(email);
 				if (account != null) {
-					if (accountRepository.emailIsConnected(account.getEmail())) {
+					if (!accountRepository.emailIsConnected(account.getEmail())) {
 						teacher.setAccount(account);
 					} else {
 						teacher.setAccount(null);
@@ -144,7 +144,9 @@ public class TeacherServiceImpl implements TeacherService {
 				}
 			}
 			teacher = teacherRepository.save(teacher);
-			addImage(teacher, avatar);
+			if (avatar != null) {
+				addImage(teacher, avatar);
+			}
 			return teacherListMapper.teacherToTeacherDTO(teacher);
 		}
 		return null;

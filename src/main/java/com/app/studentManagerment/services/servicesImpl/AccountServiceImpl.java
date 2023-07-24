@@ -29,9 +29,11 @@ public class AccountServiceImpl implements AccountService {
 		this.roleRepository = roleRepository;
 	}
 
+
 	@Override
-	public List<String> findallEmailNoConnected() {
-		return accountRepository.findallEmailNoConnected();
+	public List<String> searchEmailNoConnected(String email) {
+		return accountRepository.searchEmailNoConnected(email);
+
 	}
 
 	@Override

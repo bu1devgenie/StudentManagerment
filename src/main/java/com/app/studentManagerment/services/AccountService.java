@@ -9,7 +9,7 @@ import java.util.List;
 
 
 public interface AccountService {
-	List<String> findallEmailNoConnected();
+	List<String> searchEmailNoConnected(String email);
 
 	Account createAccount(String email, String password, List<enumRole> roles);
 

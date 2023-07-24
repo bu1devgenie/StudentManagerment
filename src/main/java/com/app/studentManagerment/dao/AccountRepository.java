@@ -12,11 +12,13 @@ import java.util.List;
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
 	@Query("""
-			         select a.email from Account a where a.email not in (select account.email from Student where account.email is not null )
+			         select a.email from Account a where a.email not in (select account.email from Student 
+			         where account.email is not null )
 			         and    a.email not in (select account.email from Teacher where account.email is not null )
 			         and    a.email not in (select account.email from User where account.email is not null )
+			         and :email IS NULL OR a.email LIKE CONCAT('%', :email, '%')
 			""")
-	List<String> findallEmailNoConnected();
+	List<String> searchEmailNoConnected(@Param("email") String email);
 
 	@Query("""
 			select a from Account a where a.email=:email

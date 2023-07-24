@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {useNavigate} from 'react-router-dom';
+import {json, useNavigate} from 'react-router-dom';
 import Navbar from '../Navbar';
 import './Teacher.css';
 import Cookies from 'js-cookie';
@@ -15,6 +15,10 @@ function Teacher() {
     const [totalPages, setTotalPages] = useState(0); // Total number of pages
     const [showModal, setShowModal] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [teacherToDelete, setTeacherToDelete] = useState(null);
+
+
 
     const accessToken = Cookies.get('accessToken');
     // load data teacher
@@ -79,16 +83,8 @@ function Teacher() {
     };
     // xử lí khi click update
     const handleUpdateClick = (rowData) => {
-        console.log("update");
-        console.log("showModal: " + showModal);
-        console.log("selectedRowData: " + selectedRowData);
-
         setShowModal(true);
-        setSelectedRowData(rowData);
-    };
-    const handleTeacherUpdate = async (updatedData) => {
-        console.log("Teacher data to be updated:", updatedData);
-        setShowModal(false);
+        setSelectedRowData(rowData.teacher); // Pass the teacher data directly
     };
     // Render the table only when there is data available
     const renderTable = () => {
@@ -153,7 +149,7 @@ function Teacher() {
         );
     };
     // render modal 
-    const UpdateTeacherModal = ({teacher}) => {
+    const UpdateTeacherModal = ({teacher, showModal}) => {
         const [formData, setFormData] = useState(teacher);
         const handleChange = (e) => {
             const {name, value} = e.target;
@@ -169,17 +165,113 @@ function Teacher() {
                 course: selectedOption
             }));
         };
+        // xử lí khi thay đổi lựa chon course
+        const handleEmailsChange = (selectedOption) => {
+            setFormData((prevData) => ({
+                ...prevData,
+                email: selectedOption
+            }));
+        };
         // load course from server
         const loadCourses = (inputValue, callback) => {
-            // Thay thế bằng mã gọi API để tìm kiếm các khóa học dựa trên từ khóa (inputValue)
-            // Ví dụ:
-            // fetch('http://example.com/api/courses?search=' + inputValue)
-            //   .then(response => response.json())
-            //   .then(data => callback(data));
+            fetch('http://localhost:9999/course/searchCourse?courseName=' + inputValue, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + accessToken
+                },
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Error fetching data');
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    const options = data.map((course) => ({
+                        value: course.name, // Use a unique identifier as the value
+                        label: course.name, // Use the course name as the label
+                    }));
+                    callback(options);
+                })
+                .catch((error) => {
+                    alert(error.message);
+                });
+        };
+        // load emails from server
+        const loadEmails = (inputValue, callback) => {
+            fetch('http://localhost:9999/account/searchEmailNoConnected?email=' + inputValue, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + accessToken
+                },
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Error fetching data');
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    const options = data.map((account) => ({
+                        value: account, // Use a unique identifier as the value
+                        label: account, // Use the course name as the label
+                    }));
+                    callback(options);
+                })
+                .catch((error) => {
+                    alert(error.message);
+                });
+        };
+        const convertCourseListToStringList = (courseList) => {
+            const stringList = courseList.map((course) => course.value);
+            return stringList;
         };
         // xử lí khi submit update
         const handleSubmit = (e) => {
             e.preventDefault();
+            // Lấy các thông tin cần thiết từ formData
+            let formDataUpdate = new FormData();
+            formDataUpdate.append('msgvUpdate', formData.msgv);
+            formDataUpdate.append('name', formData.name);
+            formDataUpdate.append('address', formData.address);
+            formDataUpdate.append('dob', formData.dob);
+            formDataUpdate.append('email', formData.email.value);
+            formDataUpdate.append('enumGender', formData.gender);
+
+            const courseListAsString = convertCourseListToStringList(formData.course);
+            formDataUpdate.append('course', courseListAsString);
+            console.log(courseListAsString);
+            console.log(formDataUpdate.get('email'));
+
+            const fileInput = document.getElementById('avatarUpdate');
+            const file = fileInput.files[0];
+            formDataUpdate.append('avatar', file);
+
+
+            console.log(formDataUpdate.get('msgvUpdate'));
+            // Gửi yêu cầu cập nhật đến server
+            fetch('http://localhost:9999/teacher/updateTeacher', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken
+                },
+                body: formDataUpdate
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Error fetching data');
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    alert("update successfull");
+                    setShowModal(false); // Đóng modal sau khi cập nhật thành công
+                })
+                .catch((error) => {
+                    alert(error.message);
+                });
         };
         const handleCloseModal = () => {
             setShowModal(false);
@@ -193,11 +285,11 @@ function Teacher() {
                     <Form onSubmit={handleSubmit}>
                         <div >
                             <Form.Label htmlFor="id" >ID:</Form.Label>
-                            <Form.Control type="text" id="id" name="id" value={formData.id} onChange={handleChange} />
+                            <Form.Control readOnly type="text" id="id" name="id" value={formData.id} onChange={handleChange} />
                         </div>
 
                         <Form.Label htmlFor="msgv">MSGV:</Form.Label>
-                        <Form.Control type="text" id="msgv" name="msgv" value={formData.msgv} onChange={handleChange} />
+                        <Form.Control readOnly type="text" id="msgv" name="msgv" value={formData.msgv} onChange={handleChange} />
 
                         <Form.Label htmlFor="name">Name:</Form.Label>
                         <Form.Control type="text" id="name" name="name" value={formData.name} onChange={handleChange} />
@@ -216,7 +308,14 @@ function Teacher() {
                         <Form.Control type="text" id="address" name="address" value={formData.address} onChange={handleChange} />
 
                         <Form.Label htmlFor="email">Email:</Form.Label>
-                        <Form.Control type="email" id="email" name="email" value={formData.email} onChange={handleChange} />
+                        <AsyncSelect
+                            cacheOptions
+                            defaultOptions
+                            loadOptions={loadEmails}
+                            isMulti={false}
+                            onChange={handleEmailsChange}
+                            defaultInputValue={formData.email}
+                        />
 
                         <Form.Label htmlFor="course">Course:</Form.Label>
                         <AsyncSelect
@@ -227,8 +326,8 @@ function Teacher() {
                             onChange={handleCourseChange}
                         />
 
-                        <Form.Label htmlFor="avatar">Avatar:</Form.Label>
-                        <Form.Control type="file" id="avatar" name="avatar" value={formData.avatar} onChange={handleChange} />
+                        <Form.Label htmlFor="avatarUpdate">Avatar:</Form.Label>
+                        <Form.Control type="file" id="avatarUpdate" name="avatarUpdate" onChange={handleChange} />
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
@@ -273,7 +372,6 @@ function Teacher() {
                 {showModal && (
                     <UpdateTeacherModal
                         teacher={selectedRowData}
-                        onUpdate={handleTeacherUpdate}
                         showModal={showModal}
                     />
                 )}

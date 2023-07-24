@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class HomeController {
     @PostMapping("/home")
     public String showHome(@RequestParam("accessToken") String accessToken) {
-        System.out.println(accessToken);
+
         return "home";
     }
 }

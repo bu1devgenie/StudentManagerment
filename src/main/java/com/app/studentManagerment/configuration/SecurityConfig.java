@@ -94,6 +94,12 @@ public class SecurityConfig {
 						//student
 						.requestMatchers("/student/findAll").hasAnyAuthority("Hr", "Admin", "Principal", "Teacher")
 						.requestMatchers("/schedule/autoGenerateSchedule").hasAnyAuthority("Principal")
+						// course
+						.requestMatchers("/course/getAllCourseName").hasAnyAuthority("Hr", "Admin", "Principal", "Teacher")
+						.requestMatchers("/course/searchCourse").hasAnyAuthority("Hr", "Admin", "Principal", "Teacher", "Student")
+						// account
+						.requestMatchers("/account/searchEmailNoConnected").hasAnyAuthority("Hr", "Admin", "Principal")
+
 						.anyRequest().authenticated()
 				);
 		httpSecurity.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);

@@ -53,7 +53,7 @@ public class TeacherRestController {
 	}
 
 	@PutMapping("/updateTeacher")
-	public synchronized TeacherDto updateTeacher(@RequestParam(name = "msgvUpdate") String msgvUpdate,
+		public synchronized TeacherDto updateTeacher(@RequestParam(name = "msgvUpdate") String msgvUpdate,
 	                                             @RequestParam(name = "name", required = false) String name,
 	                                             @RequestParam(name = "address", required = false) String address,
 	                                             @RequestParam(name = "dob", required = false) LocalDate dob,
