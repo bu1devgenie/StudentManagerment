@@ -1,7 +1,6 @@
 package com.app.studentManagerment.configuration.jwt;
 
 import com.app.studentManagerment.configuration.CustomUserDetails;
-import com.app.studentManagerment.dao.AccountRepository;
 import com.app.studentManagerment.entity.Account;
 import com.app.studentManagerment.entity.Role;
 import com.app.studentManagerment.enumPack.enumRole;
@@ -24,11 +23,9 @@ import java.util.List;
 
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter {
-	private final AccountRepository accountRepository;
 	private final JwtTokenUtil jwtTokenUtil;
 
-	public JwtTokenFilter(AccountRepository accountRepository, JwtTokenUtil jwtTokenUtil) {
-		this.accountRepository = accountRepository;
+	public JwtTokenFilter(JwtTokenUtil jwtTokenUtil) {
 		this.jwtTokenUtil = jwtTokenUtil;
 	}
 

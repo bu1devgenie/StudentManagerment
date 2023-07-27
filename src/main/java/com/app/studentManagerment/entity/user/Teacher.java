@@ -19,7 +19,6 @@ public class Teacher {
     @Column(name = "msgv", nullable = false,unique = true)
     private String msgv;
 
-
     @Column(name = "name", nullable = false)
     private String name;
 

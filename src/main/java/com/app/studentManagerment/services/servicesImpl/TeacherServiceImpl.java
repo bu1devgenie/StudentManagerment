@@ -51,9 +51,13 @@ public class TeacherServiceImpl implements TeacherService {
 
 	@Override
 	public Page<TeacherDto> search(String msgv, String name, LocalDate dob, String address, String email, List<String> course, Pageable pageable) {
-		Page<Teacher> teachers = teacherRepository.search(msgv, name, dob, address, email, course, pageable);
-		System.out.println(msgv + name + dob + address + email + course + pageable);
-		return teachers.map(teacher -> teacherListMapper.teacherToTeacherDTO(teacher));
+		Page<Teacher> teachers = null;
+		if (course.isEmpty()) {
+			teachers=teacherRepository.search(msgv, name, dob, address, email, null, pageable);
+		} else {
+			teachers=teacherRepository.search(msgv, name, dob, address, email, course, pageable);
+		}
+		return teachers.map(teacherListMapper::teacherToTeacherDTO);
 	}
 
 	@Override

@@ -10,6 +10,7 @@ function Navbar() {
 
     useEffect(() => {
         // Kiểm tra có AccessToken trong cookie hay không
+        const accessToken = Cookies.get('accessToken');
         if (accessToken) {
             // Gọi server để kiểm tra access token
             fetch('http://localhost:9999/checkAccessToken', {

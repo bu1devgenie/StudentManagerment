@@ -1,6 +1,5 @@
 package com.app.studentManagerment.dao;
 
-
 import com.app.studentManagerment.entity.user.Teacher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,31 +7,32 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface TeacherRepository extends JpaRepository<Teacher, Long> {
 	Teacher findFirstByOrderByIdDesc();
 
-
-	@Query("""
-			SELECT tea
-			FROM Teacher tea LEFT JOIN Account a ON a.email = tea.account.email
-			WHERE ((:type='' or :type like 'msgv') and (:searchTerm IS NULL OR tea.msgv LIKE CONCAT('%', :searchTerm, '%'))
-			    OR ((:type='' or :type like 'name') and (:searchTerm IS NULL OR tea.name LIKE CONCAT('%', :searchTerm, '%')))
-			OR ((:type='' or :type like 'dob') and (:searchTerm IS NULL OR tea.dob LIKE CONCAT('%', :searchTerm, '%')))
-			OR ((:type='' or :type like 'address') and (:searchTerm IS NULL OR tea.address LIKE CONCAT('%', :searchTerm, '%')))
-			OR ((:type='' or :type like 'email') and (:searchTerm IS NULL OR a.email LIKE CONCAT('%', :searchTerm, '%')))
-			OR ((:type='' or :type like 'course') and (:searchTerm IS NULL OR EXISTS (select 1 from Course c where c.name like concat('%',:searchTerm,'%') and c in (select tc from tea.course tc)))))
-			ORDER BY
-			CASE
-			WHEN :type = 'msgv' THEN tea.msgv
-			WHEN :type = 'name' THEN tea.name
-			WHEN :type = 'dob' THEN tea.dob
-			WHEN :type = 'address' THEN tea.address
-			WHEN :type = 'email' THEN a.email
-			WHEN :type = 'course' THEN tea.name END ASC""")
-	Page<Teacher> search(@Param("searchTerm") String searchTerm,
-	                     @Param("type") String type, Pageable pageable);
+	@Query(value = """
+			   SELECT t.id, t.address, t.avatar, t.dob, t.enum_gender, t.msgv, t.name, t.email
+			   FROM teacher t
+			   LEFT JOIN account a ON a.email = t.email
+			   LEFT JOIN teacher_course tc ON t.id = tc.teacher_id
+			   WHERE (:msgv IS NULL OR t.msgv LIKE CONCAT('%', :msgv, '%'))
+			       AND (:name IS NULL OR t.name LIKE CONCAT('%', :name, '%'))
+			       AND (:dob IS NULL OR t.dob = :dob)
+			       AND (:address IS NULL OR t.address LIKE CONCAT('%', :address, '%'))
+			       AND ((:email IS NULL OR :email = '') OR (a.email LIKE CONCAT('%', :email, '%')))
+			       AND (:courseNameList IS NULL OR (tc.course_id IN ( SELECT c.id FROM Course c WHERE c.name IN :courseNameList )))
+			   GROUP BY t.id
+			""", nativeQuery = true)
+	Page<Teacher> search(@Param("msgv") String msgv,
+	                     @Param("name") String name,
+	                     @Param("dob") LocalDate dob,
+	                     @Param("address") String address,
+	                     @Param("email") String email,
+	                     @Param("courseNameList") List<String> courseNameList,
+	                     Pageable pageable);
 
 	Teacher findByMsgv(String msgv);
 
@@ -72,7 +72,9 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
 			            ORDER BY numberClassTeaching ASC
 			            limit 1
 			 """, nativeQuery = true)
-	Teacher getTeacherTakeClass(@Param("semesterId") long semesterId, @Param("classroomId") long classroomId, @Param("courseId") long courseId);
+	Teacher getTeacherTakeClass(@Param("semesterId") long semesterId,
+	                            @Param("classroomId") long classroomId,
+	                            @Param("courseId") long courseId);
 
 
 	@Query("""
