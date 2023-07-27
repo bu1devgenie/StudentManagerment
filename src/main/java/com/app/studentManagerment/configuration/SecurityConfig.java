@@ -90,6 +90,9 @@ public class SecurityConfig {
 						//teacher
 						.requestMatchers("/teacher/getAllTeacher").hasAnyAuthority("Hr", "Admin", "Principal", "Teacher")
 						.requestMatchers("/teacher/searchTeacher").hasAnyAuthority("Hr", "Admin", "Principal", "Teacher")
+						.requestMatchers("/teacher/deleteTeacher").hasAnyAuthority("Admin", "Principal")
+						.requestMatchers("/teacher/getMSGV").hasAnyAuthority("Admin", "Principal")
+						.requestMatchers("/teacher/addTeacher").hasAnyAuthority("Admin", "Principal")
 
 						//student
 						.requestMatchers("/student/findAll").hasAnyAuthority("Hr", "Admin", "Principal", "Teacher")

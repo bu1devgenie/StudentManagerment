@@ -23,7 +23,7 @@ public interface StudentService {
                        String name,
                        LocalDate dob,
                        String address,
-                       MultipartFile avatarFile, enumGender enumGender) throws GeneralSecurityException, IOException;
+                       MultipartFile avatarFile, enumGender enumGender,String email) throws GeneralSecurityException, IOException;
 
     StudentDto updateStudent(String mssv,
                              int current_semester,

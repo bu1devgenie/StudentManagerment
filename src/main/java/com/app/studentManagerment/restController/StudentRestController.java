@@ -20,64 +20,73 @@ import java.time.LocalDate;
 @RequestMapping("/student")
 public class StudentRestController {
 
-    private final StudentService studentServices;
+	private final StudentService studentServices;
 
 
-    public StudentRestController(StudentService studentServices, HelperService helperService) {
-        this.studentServices = studentServices;
-    }
+	public StudentRestController(StudentService studentServices, HelperService helperService) {
+		this.studentServices = studentServices;
+	}
 
-    @GetMapping("/getMSSV")
-    public synchronized String getMSSV() {
-        return studentServices.getMSSV();
-    }
+	@GetMapping("/getMSSV")
+	public synchronized String getMSSV() {
+		return studentServices.getMSSV();
+	}
 
-    @GetMapping("/findAll")
-    public Page<StudentDto> findAll() {
-        Pageable pageable = PageRequest.of(0, 10);
-        return studentServices.search(null, null, null, pageable);
-    }
+	@GetMapping("/findAll")
+	public Page<StudentDto> findAll() {
+		Pageable pageable = PageRequest.of(0, 10);
+		return studentServices.search(null, null, null, pageable);
+	}
 
-    @PostMapping("/addStudent")
-    public synchronized Student addStudent(
-            @RequestParam(name = "current_semester") int current_semester,
-            @RequestParam String name,
-            @RequestParam LocalDate dob,
-            @RequestParam String address,
-            @RequestParam(name = "avatarFile", required = false) MultipartFile avatarFile,
-            @RequestParam(name = "enumGender", required = false) enumGender enumGender) throws IOException, GeneralSecurityException {
+	@PostMapping("/addStudent")
+	public synchronized Student addStudent(
+			@RequestParam(name = "current_semester") int current_semester,
+			@RequestParam(name = "name") String name,
+			@RequestParam(name = "dob") LocalDate dob,
+			@RequestParam(name = "address") String address,
+			@RequestParam(name = "avatarFile", required = false) MultipartFile avatarFile,
+			@RequestParam(name = "gender") String gender,
+			@RequestParam(name = "email", required = false) String mail) throws IOException, GeneralSecurityException {
 //      =========================
+		enumGender gender1 = enumGender.MALE;
+		switch (gender) {
+			case "FEMALE" -> gender1 = enumGender.FEMALE;
+			case "OTHER" -> gender1 = enumGender.OTHER;
+		}
+		return studentServices.addStudent(current_semester, name, dob, address, avatarFile, gender1, mail);
+	}
 
-        return studentServices.addStudent(current_semester, name, dob, address, avatarFile, enumGender);
-    }
+	@PostMapping("/searchStudent")
+	public Page<StudentDto> searchStudent(@RequestParam(name = "mssv") String mssv,
+	                                      @RequestParam(name = "name") String name,
+	                                      @RequestParam(name = "email") String email,
+	                                      @RequestParam(name = "targetPageNumber") Integer targetPageNumber) {
+		if (targetPageNumber < 0) {
+			return null;
+		}
+		Pageable pageable = PageRequest.of(targetPageNumber, 10);
+		return studentServices.search(mssv, name, email, pageable);
+	}
 
-    @PostMapping("/searchStudent")
-    public Page<StudentDto> searchStudent(@RequestParam(name = "mssv") String mssv,
-                                          @RequestParam(name = "name") String name,
-                                          @RequestParam(name = "email") String email,
-                                          @RequestParam(name = "targetPageNumber") Integer targetPageNumber) {
-        if (targetPageNumber < 0) {
-            return null;
-        }
-        Pageable pageable = PageRequest.of(targetPageNumber, 10);
-        return studentServices.search(mssv, name, email, pageable);
-    }
+	@DeleteMapping("/deleteStudent")
+	public synchronized boolean deleteStudent(@RequestParam(name = "mssv") String mssv) {
+		return studentServices.deleteStudent(mssv);
+	}
 
-    @DeleteMapping("/deleteStudent")
-    public synchronized boolean deleteStudent(@RequestParam(name = "mssv") String mssv) {
-        return studentServices.deleteStudent(mssv);
-    }
-
-    @PutMapping("/updateStudent")
-    public synchronized StudentDto updateStudent(@RequestParam(name = "mssvUpdate", required = true) String mssv,
-                                                 @RequestParam(name = "current_semester", required = false) int current_semester,
-                                                 @RequestParam(name = "account_mail", required = false) String mail,
-                                                 @RequestParam(name = "nameUpdate", required = false) String name,
-                                                 @RequestParam(name = "dobUpdate", required = false) LocalDate dob,
-                                                 @RequestParam(name = "addressUpdate", required = false) String address,
-                                                 @RequestParam(name = "avatar", required = false) MultipartFile avatarFile,
-                                                 @RequestParam(name = "enumGender", required = false) enumGender enumGender) throws Exception {
-
-        return studentServices.updateStudent(mssv, current_semester, mail, name, dob, address, avatarFile, enumGender);
-    }
+	@PutMapping("/updateStudent")
+	public synchronized StudentDto updateStudent(@RequestParam(name = "mssvUpdate", required = true) String mssv,
+	                                             @RequestParam(name = "current_semester", required = false) int current_semester,
+	                                             @RequestParam(name = "email", required = false) String email,
+	                                             @RequestParam(name = "nameUpdate", required = false) String name,
+	                                             @RequestParam(name = "dobUpdate", required = false) LocalDate dob,
+	                                             @RequestParam(name = "addressUpdate", required = false) String address,
+	                                             @RequestParam(name = "avatar", required = false) MultipartFile avatarFile,
+	                                             @RequestParam(name = "gender", required = false) String gender) throws Exception {
+		enumGender gender1 = enumGender.MALE;
+		switch (gender) {
+			case "FEMALE" -> gender1 = enumGender.FEMALE;
+			case "OTHER" -> gender1 = enumGender.OTHER;
+		}
+		return studentServices.updateStudent(mssv, current_semester, email, name, dob, address, avatarFile, gender1);
+	}
 }

@@ -9,7 +9,6 @@ import com.app.studentManagerment.entity.Account;
 import com.app.studentManagerment.entity.ClassRoom;
 import com.app.studentManagerment.entity.user.Student;
 import com.app.studentManagerment.enumPack.enumGender;
-import com.app.studentManagerment.enumPack.enumRole;
 import com.app.studentManagerment.services.AccountService;
 import com.app.studentManagerment.services.GoogleService;
 import com.app.studentManagerment.services.StudentService;
@@ -70,7 +69,7 @@ public class StudentServiceImpl implements StudentService {
 	}
 
 	@Override
-	public Student addStudent(int current_semester, String name, LocalDate dob, String address, MultipartFile avatarFile, enumGender enumGender) throws GeneralSecurityException, IOException {
+	public Student addStudent(int current_semester, String name, LocalDate dob, String address, MultipartFile avatarFile, enumGender enumGender, String email) {
 		String mssv = getMSSV();
 		// Tạo đối tượng Student và lưu vào database
 		Student theStudent = new Student();
@@ -80,17 +79,20 @@ public class StudentServiceImpl implements StudentService {
 		theStudent.setDob(dob);
 		theStudent.setAddress(address.trim());
 		theStudent.setGender(enumGender);
-		Account a = accountService.autoCreateAccount(name, theStudent.getMssv(), enumRole.Student);
-		if (a != null) {
-			theStudent.setAccount(a);
+		if (email != null) {
+			if (! accountRepository.emailIsConnected(email)) {
+				theStudent.setAccount(accountRepository.findByEmail(email));
+			}
 		}
 		theStudent = studentRepository.save(theStudent);
-		addImage(theStudent, avatarFile);
+		if (avatarFile != null) {
+			addImage(theStudent, avatarFile);
+		}
 		return theStudent;
 	}
 
 	@Override
-	public StudentDto updateStudent(String mssv, int current_semester, String mail, String name, LocalDate dob, String address, MultipartFile avatarFile, enumGender enumGender) throws Exception {
+	public StudentDto updateStudent(String mssv, int current_semester, String mail, String name, LocalDate dob, String address, MultipartFile avatarFile, enumGender enumGender) {
 		Student theStudent = studentRepository.findByMssv(mssv);
 		if (theStudent != null) {
 			if (current_semester > 0) {

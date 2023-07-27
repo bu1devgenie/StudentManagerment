@@ -6,10 +6,11 @@ import com.app.studentManagerment.dao.CourseRepository;
 import com.app.studentManagerment.dao.TeacherRepository;
 import com.app.studentManagerment.dto.TeacherDto;
 import com.app.studentManagerment.dto.mapper.TeacherListMapper;
-import com.app.studentManagerment.entity.*;
+import com.app.studentManagerment.entity.Account;
+import com.app.studentManagerment.entity.ClassRoom;
+import com.app.studentManagerment.entity.Course;
 import com.app.studentManagerment.entity.user.Teacher;
 import com.app.studentManagerment.enumPack.enumGender;
-import com.app.studentManagerment.enumPack.enumRole;
 import com.app.studentManagerment.services.AccountService;
 import com.app.studentManagerment.services.GoogleService;
 import com.app.studentManagerment.services.TeacherService;
@@ -28,13 +29,13 @@ import java.util.List;
 
 @Service
 public class TeacherServiceImpl implements TeacherService {
-	private TeacherRepository teacherRepository;
-	private GoogleService googleService;
-	private CourseRepository courseRepository;
-	private TeacherListMapper teacherListMapper;
-	private AccountRepository accountRepository;
-	private ClassroomRepository classroomRepository;
-	private AccountService accountService;
+	private final TeacherRepository teacherRepository;
+	private final GoogleService googleService;
+	private final CourseRepository courseRepository;
+	private final TeacherListMapper teacherListMapper;
+	private final AccountRepository accountRepository;
+	private final ClassroomRepository classroomRepository;
+	private final AccountService accountService;
 
 	@Autowired
 	public TeacherServiceImpl(TeacherRepository teacherRepository, GoogleService googleService, CourseRepository courseRepository, TeacherListMapper teacherListMapper, AccountRepository accountRepository, ClassroomRepository classroomRepository, AccountService accountService) {
@@ -49,10 +50,10 @@ public class TeacherServiceImpl implements TeacherService {
 
 
 	@Override
-	public Page<TeacherDto> search(String searchText, String type, Pageable pageable) {
-		Page<Teacher> teachers = teacherRepository.search(searchText, type, pageable);
-		Page<TeacherDto> teacherDtos = teachers.map(teacher -> teacherListMapper.teacherToTeacherDTO(teacher));
-		return teacherDtos;
+	public Page<TeacherDto> search(String msgv, String name, LocalDate dob, String address, String email, List<String> course, Pageable pageable) {
+		Page<Teacher> teachers = teacherRepository.search(msgv, name, dob, address, email, course, pageable);
+		System.out.println(msgv + name + dob + address + email + course + pageable);
+		return teachers.map(teacher -> teacherListMapper.teacherToTeacherDTO(teacher));
 	}
 
 	@Override
@@ -80,7 +81,7 @@ public class TeacherServiceImpl implements TeacherService {
 	}
 
 	@Override
-	public TeacherDto addTeacher(List<String> course, String name, LocalDate dob, String address, MultipartFile avatar, enumGender enumGender) {
+	public TeacherDto addTeacher(List<String> course, String name, LocalDate dob, String address, MultipartFile avatar, enumGender enumGender, String email) {
 		String msgv = getMSGV();
 		Teacher theTeacher = new Teacher();
 		theTeacher.setMsgv(msgv.trim());
@@ -96,9 +97,10 @@ public class TeacherServiceImpl implements TeacherService {
 		} else {
 			theTeacher.setCourse(null);
 		}
-		Account a = accountService.autoCreateAccount(name, theTeacher.getMsgv(), enumRole.Teacher);
-		if (a != null) {
-			theTeacher.setAccount(a);
+		if (email != null) {
+			if (! accountRepository.emailIsConnected(email)) {
+				theTeacher.setAccount(accountRepository.findByEmail(email));
+			}
 		}
 		theTeacher = teacherRepository.save(theTeacher);
 		addImage(theTeacher, avatar);
@@ -121,27 +123,22 @@ public class TeacherServiceImpl implements TeacherService {
 				teacher.setDob(dob);
 			}
 			if (courses != null) {
-				if (teacher.getCourse() != null) {
-					for (String c : courses) {
-						teacher.getCourse().add(courseRepository.findByName(c));
-					}
-				} else {
-					List<Course> newCourses = new ArrayList<>();
-					for (String s : courses) {
-						newCourses.add(courseRepository.findByName(s));
-					}
-					teacher.setCourse(newCourses);
+				List<Course> newCourses = new ArrayList<>();
+				for (String s : courses) {
+					newCourses.add(courseRepository.findByName(s));
 				}
+				teacher.setCourse(newCourses);
 			}
 			if (email != null) {
 				Account account = accountRepository.findByEmail(email);
 				if (account != null) {
-					if (!accountRepository.emailIsConnected(account.getEmail())) {
+					if (! accountRepository.emailIsConnected(account.getEmail())) {
 						teacher.setAccount(account);
-					} else {
-						teacher.setAccount(null);
 					}
 				}
+			}
+			if (enumGender != null) {
+				teacher.setGender(enumGender);
 			}
 			teacher = teacherRepository.save(teacher);
 			if (avatar != null) {
@@ -197,10 +194,6 @@ public class TeacherServiceImpl implements TeacherService {
 				theTeacher.setAvatar(livelink);
 				teacherRepository.save(theTeacher);
 			}
-		} catch (GeneralSecurityException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

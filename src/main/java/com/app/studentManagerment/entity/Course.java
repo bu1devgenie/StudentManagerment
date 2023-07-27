@@ -1,10 +1,6 @@
 package com.app.studentManagerment.entity;
 
-import com.app.studentManagerment.entity.user.Teacher;
 import jakarta.persistence.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "course")
@@ -12,7 +8,7 @@ public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false,unique = true)
     private String name;
     @Column(name = "courseSemester", nullable = false)
     private int courseSemester;
