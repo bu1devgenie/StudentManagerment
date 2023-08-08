@@ -1,6 +1,7 @@
 package com.app.studentManagerment.services;
 
 import com.app.studentManagerment.dto.ClassRoomDto;
+import com.app.studentManagerment.dto.TimeClassDto;
 import com.app.studentManagerment.entity.ClassRoom;
 import com.app.studentManagerment.entity.Course;
 import com.app.studentManagerment.entity.Semester;
@@ -23,4 +24,8 @@ public interface ClassRoomService {
     public boolean deleteClassRoom(String className);
 
     public boolean ShutdownClassRoom(String className, boolean isShutdown);
+
+    List<TimeClassDto> getTimeClass(String className);
+
+    List<String> getClassRoomForRegister(String courseName);
 }

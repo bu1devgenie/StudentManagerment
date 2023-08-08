@@ -35,7 +35,7 @@ public class GoogleDriveConfig {
 	private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 	private static final String TOKENS_DIRECTORY_PATH = "tokens";
 	// path file Google Drive Service
-	private static final String CREDENTIALS_FILE_PATH = "/client_secret_506984316057-4qpm9s3ss290vvhe0hic2dajilt70079.apps.googleusercontent.com.json";
+	private static final String CREDENTIALS_FILE_PATH = "/client_secret_506984316057-bos16p2ckupdrl6tml8dsa7e6iv4qo5c.apps.googleusercontent.com1.json";
 	private static final List SCOPES = Collections.singletonList(DriveScopes.DRIVE);
 	private static final String REDIRECT_URI = "http://localhost:8081/callback";
 
@@ -50,18 +50,18 @@ public class GoogleDriveConfig {
 		final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 		Credential credential = getCredentials(HTTP_TRANSPORT);
 		GGCloudCredential ggCloudCredential = gGcloudCredentialRepository.getByNameOrderByUpdateDate("credential_ggdrive");
+//		String authorLink = author();
+//		System.out.println("link: "+authorLink);
 		if (ggCloudCredential != null) {
 			credential.setRefreshToken(ggCloudCredential.getRefreshToken());
 			credential.setAccessToken(ggCloudCredential.getAccessToken());
 		} else {
-			credential = author();
 			ggCloudCredential.setAccessToken(credential.getAccessToken());
 			ggCloudCredential.setRefreshToken(credential.getRefreshToken());
 			ggCloudCredential.setUpdateDate(LocalDateTime.now());
 		}
 		if (credential.getExpiresInSeconds() != null && credential.getExpiresInSeconds() <= 60) {
 			credential.refreshToken();
-
 		}
 		Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
 				.setApplicationName(APPLICATION_NAME)
@@ -69,7 +69,7 @@ public class GoogleDriveConfig {
 		return service;
 	}
 
-	private Credential author() throws IOException, ServletException {
+	private String author() throws IOException, ServletException {
 		// Load the client credentials from the JSON file
 		InputStream in = GoogleDriveConfig.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
 		if (in == null) {
@@ -85,10 +85,7 @@ public class GoogleDriveConfig {
 		GoogleAuthorizationCodeRequestUrl url = flow.newAuthorizationUrl()
 				.setRedirectUri(REDIRECT_URI);
 		String authorizationUrl = url.build();
-
-		// open new web to author
-//		System.out.println(authorizationUrl);
-		return null;
+		return authorizationUrl;
 	}
 
 

@@ -19,13 +19,14 @@ public class User {
 
 	@Column(name = "ms", nullable = false, unique = true)
 	private String ms;
+
 	@Column(name = "address", nullable = false)
 	private String address;
 
 	@Column(name = "dob", nullable = false)
 	private LocalDate dob;
 
-	@Column(name = "avatar", nullable = false)
+	@Column(name = "avatar")
 	private String avatar;
 
 

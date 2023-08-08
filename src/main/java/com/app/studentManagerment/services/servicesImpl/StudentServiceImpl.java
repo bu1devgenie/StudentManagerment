@@ -129,6 +129,9 @@ public class StudentServiceImpl implements StudentService {
 	public boolean deleteStudent(String mssv) {
 		Student student = studentRepository.findByMssv(mssv);
 		if (student != null) {
+			if (! student.getAvatar().isEmpty()) {
+				deleteImage(student);
+			}
 			List<ClassRoom> classRoomsOfStudent = classroomRepository.findByStudents(student);
 			if (! classRoomsOfStudent.isEmpty()) {
 				for (ClassRoom c : classRoomsOfStudent) {
@@ -161,8 +164,8 @@ public class StudentServiceImpl implements StudentService {
 	}
 
 	@Override
-	public Page<StudentDto> search(String mssv, String name, String email, Pageable pageable) {
-		Page<StudentDto> studentDtos = studentRepository.search(mssv, name, email, pageable);
+	public Page<StudentDto> search(String mssv, Integer semester, String name, LocalDate dob, String email, Pageable pageable) {
+		Page<StudentDto> studentDtos = studentRepository.search(mssv, semester, name, dob, email, pageable);
 		return studentDtos;
 	}
 
@@ -176,7 +179,6 @@ public class StudentServiceImpl implements StudentService {
 	public Integer totalStudentWithCurrentSemester(int currentSemester) {
 		return studentRepository.countStudentByCurrentSemester(currentSemester);
 	}
-
 
 	@Async
 	public void addImage(Student student, MultipartFile avatar) {
@@ -196,6 +198,27 @@ public class StudentServiceImpl implements StudentService {
 			String livelink = googleService.getLiveLink(filedId);
 			student.setAvatar(livelink);
 			studentRepository.save(student);
+		} catch (GeneralSecurityException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+
+	@Async
+	public void deleteImage(Student student) {
+		try {
+			if (student.getAvatar() != null) {
+				// tìm avatar cũ của teacher
+				//  xóa nó đi
+				if (student.getAvatar() != null && student.getAvatar().contains("https://drive.google.com/uc?id=")) {
+					String fileId = student.getAvatar().substring(31);
+					googleService.deleteFileOrFolder(fileId);
+				}
+			}
 		} catch (GeneralSecurityException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {

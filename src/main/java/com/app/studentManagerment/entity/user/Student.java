@@ -32,7 +32,6 @@ public class Student {
 	@Enumerated(EnumType.STRING)
 	private enumGender enumGender;
 
-
 	@Column(name = "avatar", nullable = true)
 	private String avatar;
 

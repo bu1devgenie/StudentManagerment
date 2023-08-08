@@ -2,10 +2,11 @@ package com.app.studentManagerment.dao;
 
 import com.app.studentManagerment.entity.Account;
 import com.app.studentManagerment.entity.Role;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import com.app.studentManagerment.enumPack.enumRole;
 
 import java.util.List;
 
@@ -44,4 +45,11 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 			SELECT a.role from Account a where a.email=:email
 			""")
 	List<Role> allRoleByEmail(String email);
+
+	@Query("""
+			SELECT a from Account a where (:email like '' or 
+											:email is null or
+											 a.email like concat('%',:email,'%') )
+			""")
+	Page<Account> searchWithEmail(@Param("email") String email, Pageable pageable);
 }

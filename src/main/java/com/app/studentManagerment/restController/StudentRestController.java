@@ -32,11 +32,6 @@ public class StudentRestController {
 		return studentServices.getMSSV();
 	}
 
-	@GetMapping("/findAll")
-	public Page<StudentDto> findAll() {
-		Pageable pageable = PageRequest.of(0, 10);
-		return studentServices.search(null, null, null, pageable);
-	}
 
 	@PostMapping("/addStudent")
 	public synchronized Student addStudent(
@@ -57,15 +52,22 @@ public class StudentRestController {
 	}
 
 	@PostMapping("/searchStudent")
-	public Page<StudentDto> searchStudent(@RequestParam(name = "mssv") String mssv,
-	                                      @RequestParam(name = "name") String name,
-	                                      @RequestParam(name = "email") String email,
+	public Page<StudentDto> searchStudent(@RequestParam(name = "mssv", required = false) String mssv,
+	                                      @RequestParam(name = "semester", required = false) Integer semester,
+	                                      @RequestParam(name = "name", required = false) String name,
+	                                      @RequestParam(name = "email", required = false) String email,
+	                                      @RequestParam(name = "dob", required = false) String dob,
 	                                      @RequestParam(name = "targetPageNumber") Integer targetPageNumber) {
 		if (targetPageNumber < 0) {
 			return null;
 		}
-		Pageable pageable = PageRequest.of(targetPageNumber, 10);
-		return studentServices.search(mssv, name, email, pageable);
+		Pageable pageable = PageRequest.of(targetPageNumber, 20);
+		LocalDate dobDate = null;
+		if (dob != null && ! dob.isEmpty()) {
+			dobDate = LocalDate.parse(dob);
+		}
+
+		return studentServices.search(mssv, semester, name, dobDate, email, pageable);
 	}
 
 	@DeleteMapping("/deleteStudent")
@@ -75,11 +77,11 @@ public class StudentRestController {
 
 	@PutMapping("/updateStudent")
 	public synchronized StudentDto updateStudent(@RequestParam(name = "mssvUpdate", required = true) String mssv,
-	                                             @RequestParam(name = "current_semester", required = false) int current_semester,
+	                                             @RequestParam(name = "semester", required = false) Integer current_semester,
 	                                             @RequestParam(name = "email", required = false) String email,
-	                                             @RequestParam(name = "nameUpdate", required = false) String name,
-	                                             @RequestParam(name = "dobUpdate", required = false) LocalDate dob,
-	                                             @RequestParam(name = "addressUpdate", required = false) String address,
+	                                             @RequestParam(name = "name", required = false) String name,
+	                                             @RequestParam(name = "dob", required = false) String dob,
+	                                             @RequestParam(name = "address", required = false) String address,
 	                                             @RequestParam(name = "avatar", required = false) MultipartFile avatarFile,
 	                                             @RequestParam(name = "gender", required = false) String gender) throws Exception {
 		enumGender gender1 = enumGender.MALE;
@@ -87,6 +89,10 @@ public class StudentRestController {
 			case "FEMALE" -> gender1 = enumGender.FEMALE;
 			case "OTHER" -> gender1 = enumGender.OTHER;
 		}
-		return studentServices.updateStudent(mssv, current_semester, email, name, dob, address, avatarFile, gender1);
+		LocalDate dobDate = null;
+		if (dob != null && ! dob.isEmpty()) {
+			dobDate = LocalDate.parse(dob);
+		}
+		return studentServices.updateStudent(mssv, current_semester, email, name, dobDate, address, avatarFile, gender1);
 	}
 }

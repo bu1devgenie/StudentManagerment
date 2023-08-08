@@ -23,9 +23,9 @@ public class Attendence {
     private Atten atten;
 
     public enum Atten {
-        ABSENT,
-        PRESENT,
-        NOT_YET
+        absent,
+        attended,
+        not_yet
     }
 
     public Attendence() {

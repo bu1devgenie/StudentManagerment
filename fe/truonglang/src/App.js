@@ -55,8 +55,10 @@ function App() {
       })
       .then((data) => {
         // Lưu từng phần vào cookie
+        console.log(data);
         Cookies.set('email', data.email);
         Cookies.set('ms', data.ms);
+        Cookies.set('roles', data.roles);
         Cookies.set('name', data.name);
         Cookies.set('avatar', data.avatar);
         Cookies.set('accessToken', data.accessToken);

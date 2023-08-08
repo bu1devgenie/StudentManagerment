@@ -1,8 +1,14 @@
 package com.app.studentManagerment.dto;
 
+import com.app.studentManagerment.enumPack.enumRole;
+
+import java.util.Arrays;
+import java.util.List;
+
 public class AccountResponseDto {
 	private String email;
 	private String ms;
+	private List<enumRole> roles;
 	private String name;
 	private String avatar;
 
@@ -11,9 +17,10 @@ public class AccountResponseDto {
 	public AccountResponseDto() {
 	}
 
-	public AccountResponseDto(String email, String ms, String name, String avatar, String accessToken) {
+	public AccountResponseDto(String email, String ms, List<enumRole> roles, String name, String avatar, String accessToken) {
 		this.email = email;
 		this.ms = ms;
+		this.roles = roles;
 		this.name = name;
 		this.avatar = avatar;
 		this.accessToken = accessToken;
@@ -33,6 +40,14 @@ public class AccountResponseDto {
 
 	public void setMs(String ms) {
 		this.ms = ms;
+	}
+
+	public List<enumRole> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<enumRole> roles) {
+		this.roles = roles;
 	}
 
 	public String getName() {
@@ -64,6 +79,7 @@ public class AccountResponseDto {
 		return "AccountResponseDto{" +
 		       "email='" + email + '\'' +
 		       ", ms='" + ms + '\'' +
+		       ", roles=" + roles +
 		       ", name='" + name + '\'' +
 		       ", avatar='" + avatar + '\'' +
 		       ", accessToken='" + accessToken + '\'' +

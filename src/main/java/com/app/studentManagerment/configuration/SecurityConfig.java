@@ -96,12 +96,26 @@ public class SecurityConfig {
 
 						//student
 						.requestMatchers("/student/findAll").hasAnyAuthority("Hr", "Admin", "Principal", "Teacher")
+						.requestMatchers("/student/deleteStudent").hasAnyAuthority("Principal", "Admin", "Hr")
+						.requestMatchers("/student/searchStudent").hasAnyAuthority("Principal", "Admin", "Hr")
+						.requestMatchers("/student/addStudent").hasAnyAuthority("Principal", "Admin", "Hr")
 						.requestMatchers("/schedule/autoGenerateSchedule").hasAnyAuthority("Principal")
+						// User
+						.requestMatchers("/user/searchUser").hasAnyAuthority("Principal", "Admin")
+
 						// course
 						.requestMatchers("/course/getAllCourseName").hasAnyAuthority("Hr", "Admin", "Principal", "Teacher")
 						.requestMatchers("/course/searchCourse").hasAnyAuthority("Hr", "Admin", "Principal", "Teacher", "Student")
+						.requestMatchers("/course/addCourse").hasAnyAuthority("Admin", "Principal")
 						// account
 						.requestMatchers("/account/searchEmailNoConnected").hasAnyAuthority("Hr", "Admin", "Principal")
+						.requestMatchers("/account/searchAccount").hasAnyAuthority("Hr", "Admin", "Principal")
+						.requestMatchers("/account/addAccount").hasAnyAuthority("Admin", "Principal")
+						.requestMatchers("/account/updateAccount").hasAnyAuthority("Admin", "Principal")
+						.requestMatchers("/account/deleteAccount").hasAnyAuthority("Admin", "Principal")
+						//schedule
+						.requestMatchers("/schedule/weeklyTimetable").hasAnyAuthority("Principal", "Teacher", "Student")
+						.requestMatchers("/schedule/autoGenerateSchedule").hasAnyAuthority("Principal", "Teacher", "Student")
 
 						.anyRequest().authenticated()
 				);

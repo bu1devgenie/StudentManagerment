@@ -7,6 +7,7 @@ function Navbar() {
     const navigate = useNavigate(); // Initialize useNavigate
     const accessToken = Cookies.get('accessToken');
     const Name = Cookies.get('name');
+    const ms = Cookies.get('ms');
 
     useEffect(() => {
         // Kiểm tra có AccessToken trong cookie hay không
@@ -60,13 +61,19 @@ function Navbar() {
             case '7':
                 navigate("/attendence");
                 break;
-            case '8.1':
+            case '8':
+                navigate("/weeklytable");
+                break;
+            case '9':
+                navigate("/registerClass");
+                break;
+            case '10.1':
                 navigate("/profile");
                 break;
-            case '8.2':
+            case '10.2':
                 navigate("/account");
                 break;
-            case '8.3':
+            case '10.3':
                 navigate("/logout");
                 break;
             default:
@@ -117,13 +124,23 @@ function Navbar() {
                         Attendance
                     </Nav.Link>
                 </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link eventKey="8">
+                        Weekly timetable
+                    </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link eventKey="9">
+                        Register Class
+                    </Nav.Link>
+                </Nav.Item>
 
                 <div style={{marginLeft: 'auto'}}>
                     <NavDropdown title={Name} id="nav-dropdown">
-                        <NavDropdown.Item eventKey="8.1">Profile</NavDropdown.Item>
-                        <NavDropdown.Item eventKey="8.2">Account</NavDropdown.Item>
+                        <NavDropdown.Item eventKey="10.1">Profile</NavDropdown.Item>
+                        <NavDropdown.Item eventKey="10.2">Account</NavDropdown.Item>
                         <NavDropdown.Divider />
-                        <NavDropdown.Item eventKey="8.3">Logout</NavDropdown.Item>
+                        <NavDropdown.Item eventKey="10.3">Logout</NavDropdown.Item>
                     </NavDropdown>
                 </div>
             </Nav>

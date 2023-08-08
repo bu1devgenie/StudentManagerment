@@ -4,6 +4,8 @@ import com.app.studentManagerment.dto.AccountResponseDto;
 import com.app.studentManagerment.entity.Account;
 import com.app.studentManagerment.entity.Role;
 import com.app.studentManagerment.enumPack.enumRole;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -11,9 +13,11 @@ import java.util.List;
 public interface AccountService {
 	List<String> searchEmailNoConnected(String email);
 
-	Account createAccount(String email, String password, List<enumRole> roles);
+	Account createAccount(String email, List<String> roles);
 
-	Account updateAccount(String oldEmail, String email, String password, List<enumRole> roles);
+	Account updateAccount(String email, String password, List<String> roles);
+
+	Boolean resetPassword(String oldEmail);
 
 	boolean deleteAccount(String email);
 
@@ -21,4 +25,7 @@ public interface AccountService {
 
 	List<Role> getRoles(String email);
 
+	Page<Account> searchAccount(String email, Pageable pageable);
+
+	List<Role> allRoleForAccount();
 }

@@ -13,33 +13,33 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface StudentService {
-    Student findStudentByEmail(String email);
+	Student findStudentByEmail(String email);
 
-    Student findById(long id);
+	Student findById(long id);
 
-    Student findByMssv(String mssv);
+	Student findByMssv(String mssv);
 
-    Student addStudent(int current_semester,
-                       String name,
-                       LocalDate dob,
-                       String address,
-                       MultipartFile avatarFile, enumGender enumGender,String email) throws GeneralSecurityException, IOException;
+	Student addStudent(int current_semester,
+	                   String name,
+	                   LocalDate dob,
+	                   String address,
+	                   MultipartFile avatarFile, enumGender enumGender, String email) throws GeneralSecurityException, IOException;
 
-    StudentDto updateStudent(String mssv,
-                             int current_semester,
-                             String mail,
-                             String Name,
-                             LocalDate dob,
-                             String address,
-                             MultipartFile avatarFile, enumGender enumGender) throws Exception;
+	StudentDto updateStudent(String mssv,
+	                         int current_semester,
+	                         String mail,
+	                         String Name,
+	                         LocalDate dob,
+	                         String address,
+	                         MultipartFile avatarFile, enumGender enumGender) throws Exception;
 
-    boolean deleteStudent(String mssv);
+	boolean deleteStudent(String mssv);
 
-    String getMSSV();
+	String getMSSV();
 
-    Page<StudentDto> search(String mssv, String name, String email, Pageable pageable);
+	Page<StudentDto> search(String mssv, Integer semester, String name, LocalDate dob, String email, Pageable pageable);
 
-    List<StudentDto> getAllStudentWithCurrentSemester(int currentSemester);
+	List<StudentDto> getAllStudentWithCurrentSemester(int currentSemester);
 
-    Integer totalStudentWithCurrentSemester(int currentSemester);
+	Integer totalStudentWithCurrentSemester(int currentSemester);
 }

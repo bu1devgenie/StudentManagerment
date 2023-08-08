@@ -28,4 +28,6 @@ public enum enumRole {
 		}
 		throw new IllegalArgumentException("Invalid string value: " + value);
 	}
+
+
 }

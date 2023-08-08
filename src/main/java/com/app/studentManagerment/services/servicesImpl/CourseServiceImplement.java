@@ -6,6 +6,8 @@ import com.app.studentManagerment.entity.ClassRoom;
 import com.app.studentManagerment.entity.Course;
 import com.app.studentManagerment.services.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,8 +35,8 @@ public class CourseServiceImplement implements CourseService {
 	}
 
 	@Override
-	public Course updateCourse(long id, String name, int totalSlot, int courseSemester) {
-		Course course = courseRepository.findById(id);
+	public Course updateCourse(String name, Integer total_slot, Integer course_semester, boolean activity) {
+		Course course = courseRepository.findByName(name);
 		List<ClassRoom> classRooms = classroomRepository.findByCourse(course);
 		for (ClassRoom classRoom : classRooms) {
 			if (classRoom.isLearning()) {
@@ -47,12 +49,13 @@ public class CourseServiceImplement implements CourseService {
 		if (! name.isEmpty()) {
 			course.setName(name);
 		}
-		if (totalSlot > 0) {
-			course.setTotalSlot(totalSlot);
+		if (total_slot > 0) {
+			course.setTotalSlot(total_slot);
 		}
-		if (courseSemester > 0 && courseSemester <= 10) {
-			course.setCourseSemester(courseSemester);
+		if (course_semester > 0 && course_semester <= 10) {
+			course.setCourseSemester(course_semester);
 		}
+		course.setActivity(activity);
 		return courseRepository.save(course);
 	}
 
@@ -62,8 +65,8 @@ public class CourseServiceImplement implements CourseService {
 	}
 
 	@Override
-	public Boolean shutdownCourse(long id) {
-		Course course = courseRepository.findById(id);
+	public Boolean shutdownCourse(String name) {
+		Course course = courseRepository.findByName(name);
 		if (course != null && course.isActivity()) {
 			List<ClassRoom> classRooms = classroomRepository.findByCourse(course);
 			for (ClassRoom classRoom : classRooms) {
@@ -83,6 +86,7 @@ public class CourseServiceImplement implements CourseService {
 		if (course != null) {
 			return null;
 		}
+		course = new Course();
 		course.setName(name);
 		course.setTotalSlot(totalSlot);
 		course.setActivity(activity);
@@ -96,8 +100,18 @@ public class CourseServiceImplement implements CourseService {
 	}
 
 	@Override
-	public List<Course> searchByName(String courseName) {
-		return courseRepository.searchByName(courseName);
+	public Page<Course> searchCourse(String courseName, Integer total_slot, Integer course_semester, Boolean activity, Pageable pageable) {
+
+		return courseRepository.searchCourse(courseName, total_slot, course_semester, activity, pageable);
+	}
+
+	@Override
+	public Boolean checkCourse(String courseName) {
+		Course course = courseRepository.findByName(courseName);
+		if (course != null) {
+			return true;
+		}
+		return false;
 	}
 
 

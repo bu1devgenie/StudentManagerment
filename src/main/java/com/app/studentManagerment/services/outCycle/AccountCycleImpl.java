@@ -35,24 +35,25 @@ public class AccountCycleImpl implements AccountCycle {
 		dto.setEmail(email);
 		List<Role> roles = accountService.getRoles(email);
 		List<enumRole> rolesList = roles.stream().map(Role::getName).toList();
-
-		User user = null;
 		if (rolesList.contains(enumRole.Student)) {
 			Student student = studentService.findStudentByEmail(email);
 			dto.setName(student.getName());
 			dto.setMs(student.getMssv());
 			dto.setAvatar(student.getAvatar());
+			dto.setRoles(rolesList);
 		} else if (rolesList.contains(enumRole.Teacher)) {
 			Teacher teacher = teacherService.findTeacherByEmail(email);
 			dto.setName(teacher.getName());
 			dto.setMs(teacher.getMsgv());
 			dto.setAvatar(teacher.getAvatar());
+			dto.setRoles(rolesList);
 		} else if (rolesList.contains(enumRole.Hr) || rolesList.contains(enumRole.Admin) || rolesList.contains(enumRole.Principal)) {
-			user = userService.findUserByEmail(email);
+			User user = userService.findUserByEmail(email);
 			dto.setName(user.getName());
 			dto.setMs(user.getMs());
 			dto.setAvatar(user.getAvatar());
+			dto.setRoles(rolesList);
 		}
-		return user != null ? dto : null;
+		return dto;
 	}
 }

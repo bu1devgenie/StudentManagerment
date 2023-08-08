@@ -1,15 +1,15 @@
 import React, {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import Navbar from '../Navbar';
-import './Teacher.css';
+import './Student.css';
 import Cookies from 'js-cookie';
 import ReactPaginate from 'react-paginate';
 import {Modal, Button} from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import AsyncSelect from 'react-select/async';
-function Teacher() {
+function Student() {
     const navigate = useNavigate();
-    const [teacherData, setTeacherData] = useState([]);
+    const [studentData, setStudentData] = useState([]);
     const [currentPage, setCurrentPage] = useState(0); // Page index starts from 0
     const [totalPages, setTotalPages] = useState(0); // Total number of pages
     const [selectedRowData, setSelectedRowData] = useState(null);
@@ -18,12 +18,11 @@ function Teacher() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const accessToken = Cookies.get('accessToken');
     const [searchData, setSearchData] = useState({
-        msgv: '',
+        mssv: '',
+        semester: null,
         name: '',
-        dob: '',
-        address: '',
-        email: '',
-        course: [],
+        dob: null,
+        email: ''
     });
 
     // search handle 
@@ -41,39 +40,12 @@ function Teacher() {
         }));
     };
 
-    // load data teacher
+    // load data student
     useEffect(() => {
-        fetchTeachers(currentPage);
+        fetchStudent(currentPage);
     }, [currentPage]);
-    const convertCourseListToStringList = (courseList) => {
-        const stringList = courseList.map((course) => course.value);
-        return stringList;
-    };
-    // load course from server
-    const loadCourses = async () => {
-        try {
-            const response = await fetch('http://localhost:9999/course/searchCourse', {
-                method: 'Get',
-                headers: {
-                    'Authorization': 'Bearer ' + accessToken
-                },
-            });
 
-            if (!response.ok) {
-                throw new Error('Error fetching data');
-            }
 
-            const data = await response.json();
-            const options = data.map((role) => ({
-                value: role.name, // Use a unique identifier as the value
-                label: role.name, // Use the course name as the label
-            }));
-            return options;
-        } catch (error) {
-            alert(error.message);
-            return [];
-        }
-    };
     // load emails from server
     const loadEmails = (inputValue, callback) => {
         fetch('http://localhost:9999/account/searchEmailNoConnected?email=' + inputValue, {
@@ -100,18 +72,25 @@ function Teacher() {
                 alert(error.message);
             });
     };
-    const fetchTeachers = async (page) => {
+    const fetchStudent = async (page) => {
         try {
             let formDataSearch = new FormData();
-            formDataSearch.append('email', searchData.email);
-            formDataSearch.append('msgv', searchData.msgv);
-            formDataSearch.append('name', searchData.name);
-            formDataSearch.append('address', searchData.address);
-            formDataSearch.append('dob', searchData.dob);
-            const courseListAsString = convertCourseListToStringList(searchData.course);
-            formDataSearch.append('course', courseListAsString);
-            var url = `http://localhost:9999/teacher/searchTeacher?targetPageNumber=${page}`;
-
+            if (searchData.mssv) {
+                formDataSearch.append('mssv', searchData.mssv);
+            }
+            if (searchData.name) {
+                formDataSearch.append('name', searchData.name);
+            }
+            if (searchData.email) {
+                formDataSearch.append('email', searchData.email);
+            }
+            if (searchData.semester) {
+                formDataSearch.append('semester', Number(searchData.semester));
+            }
+            if (searchData.dob) {
+                formDataSearch.append('dob', searchData.dob);
+            }
+            var url = `http://localhost:9999/student/searchStudent?targetPageNumber=${page}`;
             const response = await fetch(
                 url,
                 {
@@ -126,7 +105,7 @@ function Teacher() {
                 throw new Error('Error fetching data');
             }
             const data = await response.json();
-            setTeacherData(data.content); // Update the teacherData state with the new data
+            setStudentData(data.content);
             setTotalPages(data.totalPages);
         } catch (error) {
             alert(error.message);
@@ -138,15 +117,16 @@ function Teacher() {
     };
     // xử lí khi click update
     const handleUpdateClick = (rowData) => {
+        console.log(rowData.student);
         setShowModal(true);
-        setSelectedRowData(rowData.teacher); // Pass the teacher data directly
+        setSelectedRowData(rowData.student);
     };
     // xử lí khi click delete
     const handleDeleteClick = (rowData) => {
-        setSelectedRowData(rowData.teacher);
         setShowDeleteModal(true);
+        setSelectedRowData(rowData.student);
     };
-    // xử lí khi click add
+    // xử lí khi click <add></add>
     const handleAddClick = () => {
         setShowAddModal(true);
 
@@ -155,14 +135,14 @@ function Teacher() {
     // xử lí khi click search
     const handleSearchClick = (e) => {
         e.preventDefault();
-        fetchTeachers(0);
-        console.log("clicked search");
+        fetchStudent(0);
+        setCurrentPage(0);
     };
 
 
     // render modal update
-    const UpdateTeacherModal = ({teacher, showModal}) => {
-        const [formData, setFormData] = useState(teacher);
+    const UpdateStudentModal = ({student, showModal}) => {
+        const [formData, setFormData] = useState(student);
         const handleChange = (e) => {
             const {name, value} = e.target;
             setFormData((prevData) => ({
@@ -170,13 +150,7 @@ function Teacher() {
                 [name]: value
             }));
         };
-        // xử lí khi thay đổi lựa chon course
-        const handleCourseChange = (selectedOption) => {
-            setFormData((prevData) => ({
-                ...prevData,
-                course: selectedOption
-            }));
-        };
+
         // xử lí khi thay đổi lựa chon email
         const handleEmailsChange = (selectedOption) => {
             setFormData((prevData) => ({
@@ -195,23 +169,19 @@ function Teacher() {
             }
             console.log(formData.email);
 
-            formDataUpdate.append('msgvUpdate', formData.msgv);
+            formDataUpdate.append('mssvUpdate', formData.mssv);
+            formDataUpdate.append('semester', formData.semester);
             formDataUpdate.append('name', formData.name);
-            formDataUpdate.append('address', formData.address);
             formDataUpdate.append('dob', formData.dob);
+            formDataUpdate.append('address', formData.address);
             formDataUpdate.append('gender', formData.gender);
-
-            const courseListAsString = convertCourseListToStringList(formData.course);
-            formDataUpdate.append('course', courseListAsString);
-
-
             const fileInput = document.getElementById('avatarUpdate');
             const file = fileInput.files[0];
             formDataUpdate.append('avatar', file);
 
 
             // Gửi yêu cầu cập nhật đến server
-            fetch('http://localhost:9999/teacher/updateTeacher', {
+            fetch('http://localhost:9999/student/updateStudent', {
                 method: 'PUT',
                 headers: {
                     'Authorization': 'Bearer ' + accessToken
@@ -238,7 +208,7 @@ function Teacher() {
         return (
             <Modal show={showModal} onHide={handleCloseModal}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Update Teacher</Modal.Title>
+                    <Modal.Title>Update Student</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={handleSubmit}>
@@ -247,8 +217,18 @@ function Teacher() {
                             <Form.Control readOnly type="text" id="id" name="id" value={formData.id} onChange={handleChange} />
                         </div>
 
-                        <Form.Label htmlFor="msgv">MSGV:</Form.Label>
-                        <Form.Control readOnly type="text" id="msgv" name="msgv" value={formData.msgv} onChange={handleChange} />
+                        <Form.Label htmlFor="mssv">MSSV:</Form.Label>
+                        <Form.Control readOnly type="text" id="mssv" name="mssv" value={formData.mssv} onChange={handleChange} />
+
+                        <Form.Label htmlFor="semester">Semester:</Form.Label>
+                        <Form.Select id="semester" name="semester" onChange={handleChange}>
+                            <option value="0">All Semesters</option>
+                            {Array.from({length: 10}, (_, index) => index + 1).map((semester) => (
+                                <option key={semester} value={semester} selected={semester === formData.currentSemester}>
+                                    {semester}
+                                </option>
+                            ))}
+                        </Form.Select>
 
                         <Form.Label htmlFor="name">Name:</Form.Label>
                         <Form.Control type="text" id="name" name="name" value={formData.name} onChange={handleChange} />
@@ -277,14 +257,7 @@ function Teacher() {
                             defaultInputValue={formData.email}
                         />
 
-                        <Form.Label htmlFor="course">Course:</Form.Label>
-                        <AsyncSelect
-                            cacheOptions
-                            defaultOptions
-                            loadOptions={loadCourses}
-                            isMulti={true}
-                            onChange={handleCourseChange}
-                        />
+
 
                         <Form.Label htmlFor="avatarUpdate">Avatar:</Form.Label>
                         <Form.Control type="file" id="avatarUpdate" name="avatarUpdate" onChange={handleChange} />
@@ -302,11 +275,9 @@ function Teacher() {
         );
     };
     // render modal delete
-    const DeleteTeacherModal = ({teacher, showDeleteModal}) => {
-
-
+    const DeleteTeacherModal = ({student, showDeleteModal}) => {
         const handleConfirmDelete = () => {
-            fetch('http://localhost:9999/teacher/deleteTeacher?msgv=' + teacher.msgv, {
+            fetch('http://localhost:9999/student/deleteStudent?mssv=' + student.mssv, {
                 method: 'Delete',
                 headers: {
                     'Authorization': 'Bearer ' + accessToken
@@ -338,9 +309,9 @@ function Teacher() {
                     <Modal.Title>Confirm Delete</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p>Are you sure you want to delete this teacher?</p>
-                    <p>Msgv: {teacher.msgv}</p>
-                    <p>Name: {teacher.name}</p>
+                    <p>Are you sure you want to delete this student?</p>
+                    <p>Mssv: {student.mssv}</p>
+                    <p>Name: {student.name}</p>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
@@ -356,13 +327,13 @@ function Teacher() {
     // render modal add
     const AddTeacherModal = ({showModal}) => {
         const [formData, setFormData] = useState({
-            // Initialize form data for the new teacher
+            // Initialize form data for the new student
             name: '',
             dob: '',
+            semester: '',
             gender: 'MALE',
             address: '',
             email: '',
-            course: [],
             avatar: null
         });
         const handleFileChange = (e) => {
@@ -392,20 +363,16 @@ function Teacher() {
 
             let formDataAdd = new FormData();
             formDataAdd.append('name', formData.name);
+            formDataAdd.append('current_semester', formData.semester);
             formDataAdd.append('address', formData.address);
             formDataAdd.append('dob', formData.dob);
             formDataAdd.append('email', formData.email.value);
             formDataAdd.append('gender', formData.gender);
-
-            const courseListAsString = convertCourseListToStringList(formData.course);
-            formDataAdd.append('course', courseListAsString);
-
-
             const fileInput = document.getElementById('avatarAdd');
             const file = fileInput.files[0];
-            formDataAdd.append('avatar', file);
+            formDataAdd.append('avatarFile', file);
             // Gửi yêu cầu cập nhật đến server
-            fetch('http://localhost:9999/teacher/addTeacher', {
+            fetch('http://localhost:9999/student/addStudent', {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer ' + accessToken
@@ -443,7 +410,7 @@ function Teacher() {
         return (
             <Modal show={showAddModal} onHide={handleCloseModal}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Update Teacher</Modal.Title>
+                    <Modal.Title>Update Student</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={handleSubmit}>
@@ -452,8 +419,18 @@ function Teacher() {
                             <Form.Control readOnly type="text" id="id" name="id" onChange={handleChange} />
                         </div>
 
-                        <Form.Label htmlFor="msgv">MSGV:</Form.Label>
-                        <Form.Control readOnly type="text" id="msgv" name="msgv" onChange={handleChange} />
+                        <Form.Label htmlFor="mssv">MSSV:</Form.Label>
+                        <Form.Control readOnly type="text" id="mssv" name="mssv" onChange={handleChange} />
+
+                        <Form.Label htmlFor="semester">Semester:</Form.Label>
+                        <Form.Select id="semester" name="semester" onChange={handleChange}>
+                            <option value="0">All Semesters</option>
+                            {Array.from({length: 10}, (_, index) => index + 1).map((semester) => (
+                                <option key={semester} value={semester}>
+                                    {semester}
+                                </option>
+                            ))}
+                        </Form.Select>
 
                         <Form.Label htmlFor="name">Name:</Form.Label>
                         <Form.Control type="text" id="name" name="name" onChange={handleChange} />
@@ -480,15 +457,6 @@ function Teacher() {
                             onChange={handleEmailsChange}
                         />
 
-                        <Form.Label htmlFor="course">Course:</Form.Label>
-                        <AsyncSelect
-                            cacheOptions
-                            defaultOptions
-                            loadOptions={loadCourses}
-                            isMulti={true}
-                            onChange={handleCourseChange}
-                        />
-
                         <Form.Label htmlFor="avatarAdd">Avatar:</Form.Label>
                         <Form.Control type="file" id="avatarAdd" name="avatarAdd" onChange={handleFileChange} />
                     </Form>
@@ -498,7 +466,7 @@ function Teacher() {
                         Close
                     </Button>
                     <Button variant="primary" onClick={handleSubmit}>
-                        Add Teacher
+                        Add Student
                     </Button>
                 </Modal.Footer>
             </Modal >
@@ -509,7 +477,7 @@ function Teacher() {
 
     // Render the table only when there is data available
     const renderTable = () => {
-        if (teacherData.length === 0) {
+        if (studentData.length === 0) {
             return <p>No data available.</p>; // Show a message when no data
         }
         return (
@@ -517,52 +485,46 @@ function Teacher() {
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Semester</th>
                         <th>Avatar</th>
-                        <th>MSGV</th>
+                        <th>MSSV</th>
                         <th>Name</th>
                         <th>Dob</th>
                         <th>Gender</th>
                         <th>Address</th>
                         <th>Email</th>
-                        <th>Course</th>
                         <th>Actions</th>
-                        {/* Add more table headers for other teacher properties if needed */}
+                        {/* Add more table headers for other student properties if needed */}
                     </tr>
                 </thead>
                 <tbody>
-                    {teacherData.map((teacher) => (
-                        <tr key={teacher.id}>
-                            <td>{teacher.id}</td>
+                    {studentData.map((student) => (
+                        <tr key={student.id}>
+                            <td>{student.id}</td>
+                            <td>{student.currentSemester}</td>
                             <td>
-                                {teacher.avatar && (
+                                {student.avatar && (
                                     <img
-                                        src={teacher.avatar}
+                                        src={student.avatar}
                                         alt="Avatar"
                                         style={{maxWidth: '100px', maxHeight: '100px'}}
                                     />
                                 )}
                             </td>
-                            <td>{teacher.msgv}</td>
-                            <td>{teacher.name}</td>
-                            <td>{teacher.dob}</td>
-                            <td>{teacher.gender}</td>
-                            <td>{teacher.address}</td>
-                            <td>{teacher.email}</td>
-                            <td>
-                                <ul>
-                                    {teacher.course.map((course) => (
-                                        <li key={course.id}>{course.name}</li>
-                                    ))}
-                                </ul>
-                            </td>
+                            <td>{student.mssv}</td>
+                            <td>{student.name}</td>
+                            <td>{student.dob}</td>
+                            <td>{student.gender}</td>
+                            <td>{student.address}</td>
+                            <td>{student.email}</td>
                             <td>
                                 <button
                                     className="btn btn-primary"
-                                    onClick={() => handleUpdateClick({teacher})}>
+                                    onClick={() => handleUpdateClick({student})}>
                                     Update
                                 </button>
                                 <button className="btn btn-danger"
-                                    onClick={() => handleDeleteClick({teacher})}>
+                                    onClick={() => handleDeleteClick({student})}>
                                     Delete
                                 </button>
                             </td>
@@ -575,25 +537,32 @@ function Teacher() {
     return (
         <div>
             <Navbar />
-            <div className="teacher-container">
-                <h2>List of Teachers:</h2>
+            <div className="student-container">
+                <h2>List of Student:</h2>
                 {/* Render the table using the conditional function */}
                 <button className="btn btn-primary" onClick={handleAddClick}>
-                    Add New Teacher
+                    Add New Student
                 </button>
                 {/* Search input fields */}
                 {/* Search form */}
                 <div>
                     <Form onSubmit={handleSearchClick} className="search-form">
-                        <Form.Label>Search by MSGV:</Form.Label>
+                        <Form.Label>Search by MSSV:</Form.Label>
                         <Form.Control
                             type="text"
-                            name="msgv"
-                            placeholder="Enter MSGV"
-                            value={searchData.msgv}
+                            name="mssv"
+                            placeholder="Enter MSSV"
+                            value={searchData.mssv}
                             onChange={handleSearchInputChange}
                         />
-
+                        <Form.Label>Search by Semester:</Form.Label>
+                        <Form.Control
+                            type="text"
+                            name="semester"
+                            placeholder="Enter Semester"
+                            value={searchData.semester}
+                            onChange={handleSearchInputChange}
+                        />
                         <Form.Label>Search by Name:</Form.Label>
                         <Form.Control
                             type="text"
@@ -602,7 +571,6 @@ function Teacher() {
                             value={searchData.name}
                             onChange={handleSearchInputChange}
                         />
-
                         <Form.Label>Search by Dob:</Form.Label>
                         <Form.Control
                             type="date"
@@ -611,16 +579,6 @@ function Teacher() {
                             value={searchData.dob}
                             onChange={handleSearchInputChange}
                         />
-
-                        <Form.Label>Search by Address:</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="address"
-                            placeholder="Enter Address"
-                            value={searchData.address}
-                            onChange={handleSearchInputChange}
-                        />
-
                         <Form.Label>Search by Email:</Form.Label>
                         <Form.Control
                             type="text"
@@ -629,17 +587,6 @@ function Teacher() {
                             value={searchData.email}
                             onChange={handleSearchInputChange}
                         />
-
-                        <Form.Label>Search by Course:</Form.Label>
-                        <AsyncSelect
-                            cacheOptions
-                            defaultOptions
-                            loadOptions={loadCourses}
-                            isMulti={true}
-                            onChange={handleSearchCourseChange}
-                            defaultInputValue={searchData.course}
-                        />
-
                         <Button variant="primary" type="submit">
                             Search
                         </Button>
@@ -668,15 +615,15 @@ function Teacher() {
                 {/* Pagination */}
                 {/* Modal update*/}
                 {showModal && (
-                    <UpdateTeacherModal
-                        teacher={selectedRowData}
+                    <UpdateStudentModal
+                        student={selectedRowData}
                         showModal={showModal}
                     />
                 )}
                 {/* Modal delete*/}
                 {showDeleteModal && (
                     <DeleteTeacherModal
-                        teacher={selectedRowData}
+                        student={selectedRowData}
                         showDeleteModal={showDeleteModal}
                     />
                 )}
@@ -692,4 +639,4 @@ function Teacher() {
 
 }
 
-export default Teacher;
+export default Student;
